@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: cannabis_db
+    environment:
+      POSTGRES_DB: cannabis_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  ai-service:
+    build: ./ai-service
+    container_name: cannabis_ai_service
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./ai-service:/app
+
+volumes:
+  db_data:

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Diagnóstico de Cultivo MVP</title>
+    
+    <!-- Tailwind CSS & Config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: { bg: '#0f172a', card: '#1e293b', text: '#f1f5f9' }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body, .card, input, select, button, textarea {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-green-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-green-700 dark:bg-green-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto max-w-4xl flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fa-solid fa-leaf mr-2 text-xl"></i>
+                <div>
+                    <h1 class="text-lg md:text-2xl font-bold leading-tight">Asistente de Cultivo</h1>
+                    <span class="text-[10px] uppercase bg-green-800 px-1.5 py-0.5 rounded opacity-80 tracking-wider">MVP v1.2</span>
+                </div>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-green-600 dark:hover:bg-green-800 transition focus:outline-none">
+                <i class="fas fa-moon text-lg" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-4xl p-4 space-y-6 pb-20">
+
+        <!-- SECCIÓN 1: SOLUCIONADOR DE PROBLEMAS -->
+        <section class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card border-l-4 border-green-500">
+            <div class="p-5 md:p-6">
+                <h2 class="text-lg md:text-xl font-bold mb-4 text-green-800 dark:text-green-400 border-b dark:border-gray-700 pb-2 flex items-center">
+                    <i class="fa-solid fa-stethoscope mr-2"></i>Diagnóstico
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-300">1. Fase de Cultivo</label>
+                        <select id="inputFase" class="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecciona la fase...</option>
+                            <option value="Vegetativo">Vegetativo</option>
+                            <option value="Floración">Floración</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-300">2. Síntoma Visual</label>
+                        <select id="inputSintoma" class="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50" disabled>
+                            <option value="">Primero selecciona una fase...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="btnDiagnosticar" class="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-md flex justify-center items-center">
+                    <i class="fa-solid fa-magnifying-glass mr-2"></i> Diagnosticar
+                </button>
+
+                <div id="diagnosticResult" class="hidden mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <h3 class="text-base font-bold text-red-600 dark:text-red-400 mb-1 flex items-center">
+                        <i class="fa-solid fa-circle-exclamation mr-2"></i>Causa Probable:
+                    </h3>
+                    <p id="resultCausa" class="mb-4 text-gray-800 dark:text-gray-200 font-medium ml-6"></p>
+                    <h3 class="text-base font-bold text-green-700 dark:text-green-400 mb-1 flex items-center">
+                        <i class="fa-solid fa-clipboard-check mr-2"></i>Acción Correctiva:
+                    </h3>
+                    <div class="bg-green-100 dark:bg-green-900/30 p-4 rounded border-l-4 border-green-600 dark:border-green-500 ml-1">
+                        <p id="resultAccion" class="text-gray-900 dark:text-gray-100"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CALCULADORA VPD -->
+        <section class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card border-l-4 border-blue-500">
+            <div class="p-5 md:p-6">
+                <h2 class="text-lg md:text-xl font-bold mb-4 text-blue-800 dark:text-blue-400 border-b dark:border-gray-700 pb-2 flex items-center">
+                    <i class="fa-solid fa-calculator mr-2"></i>Calculadora VPD
+                </h2>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs md:text-sm font-bold mb-2 text-gray-600 dark:text-gray-300">Temp (°C)</label>
+                        <input type="number" id="inputTemp" class="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: 25">
+                    </div>
+                    <div>
+                        <label class="block text-xs md:text-sm font-bold mb-2 text-gray-600 dark:text-gray-300">Humedad (%)</label>
+                        <input type="number" id="inputRh" class="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: 60">
+                    </div>
+                </div>
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-center border border-blue-100 dark:border-blue-800/30">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Déficit de Presión</p>
+                    <div id="vpdValue" class="text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-200 my-2">-- kPa</div>
+                    <p id="vpdStatus" class="text-xs md:text-sm font-bold px-3 py-1 rounded inline-block bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300">Ingresa datos...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: GESTIÓN DE CULTIVOS (BITÁCORA AVANZADA) -->
+        <section class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card border-l-4 border-yellow-500">
+            <div class="p-5 md:p-6">
+                <h2 class="text-lg md:text-xl font-bold mb-4 text-yellow-700 dark:text-yellow-400 border-b dark:border-gray-700 pb-2 flex items-center justify-between">
+                    <span><i class="fa-solid fa-book-open mr-2"></i>Mis Cultivos & Bitácora</span>
+                </h2>
+
+                <!-- 3.A: CREAR NUEVO LOTE -->
+                <div class="mb-6 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-800">
+                    <button id="toggleBatchForm" class="text-sm font-bold text-yellow-700 dark:text-yellow-500 flex items-center hover:underline focus:outline-none w-full justify-between">
+                        <span><i class="fa-solid fa-seedling mr-2"></i>Registrar Nuevo Lote / Planta</span>
+                        <i class="fa-solid fa-chevron-down transform transition-transform" id="batchChevron"></i>
+                    </button>
+                    
+                    <div id="batchFormContainer" class="hidden mt-4 space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="text" id="batchName" placeholder="Nombre del Lote (Ej: Carpa A, OG Kush #1)" class="w-full p-2 rounded border dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                            <input type="text" id="batchGenetics" placeholder="Genética (Opcional)" class="w-full p-2 rounded border dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-500 dark:text-gray-400 block mb-1">Fecha Inicio</label>
+                                <input type="date" id="batchDate" class="w-full p-2 rounded border dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 dark:text-gray-400 block mb-1">Fase Actual</label>
+                                <select id="batchPhase" class="w-full p-2 rounded border dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                                    <option value="Plántula">Plántula</option>
+                                    <option value="Vegetativo">Vegetativo</option>
+                                    <option value="Floración">Floración</option>
+                                    <option value="Secado">Secado/Curado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="btnSaveBatch" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 rounded text-sm transition">
+                            Guardar Lote
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3.B: AÑADIR ENTRADA A BITÁCORA -->
+                <h3 class="text-sm font-bold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">Nueva Entrada de Bitácora</h3>
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6 border border-gray-200 dark:border-gray-600">
+                    
+                    <!-- Selección del Lote -->
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Aplicar a:</label>
+                        <select id="logBatchSelect" class="w-full p-2 rounded border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white text-sm">
+                            <option value="">-- Selecciona un Lote --</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                        <select id="logType" class="p-2 rounded border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white text-sm">
+                            <option value="Riego">💧 Riego</option>
+                            <option value="Nutrientes">🧪 Nutrientes</option>
+                            <option value="Poda">✂️ Poda/Entreno</option>
+                            <option value="Observación">👁️ Observación</option>
+                            <option value="Cambio Fase">🔄 Cambio de Fase</option>
+                        </select>
+                        <input type="text" id="logNote" placeholder="Notas / Tareas (ej: 1L agua, pH 6.2)" class="md:col-span-2 p-2 rounded border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white text-sm">
+                    </div>
+                    
+                    <button id="btnAddLog" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded text-sm transition shadow-sm">
+                        <i class="fa-solid fa-plus mr-1"></i> Registrar Actividad
+                    </button>
+                </div>
+
+                <!-- 3.C: LISTADO DE REGISTROS -->
+                <div class="flex justify-between items-end mb-2 border-b dark:border-gray-700 pb-1">
+                    <h3 class="text-sm font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Historial Reciente</h3>
+                    <span id="logCount" class="text-xs text-gray-400">0 registros</span>
+                </div>
+                
+                <div class="space-y-3 max-h-96 overflow-y-auto pr-1" id="logContainer">
+                    <!-- Los logs se renderizarán aquí -->
+                    <div class="text-center text-gray-400 text-sm py-4 italic">No hay registros. Crea un lote y añade notas.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: TABLAS DE REFERENCIA -->
+        <section class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card border-l-4 border-purple-500">
+            <div class="p-5 md:p-6">
+                <h2 class="text-lg md:text-xl font-bold mb-4 text-purple-800 dark:text-purple-400 border-b dark:border-gray-700 pb-2 flex items-center">
+                    <i class="fa-solid fa-table-list mr-2"></i>Rangos Ideales
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-left text-sm whitespace-nowrap">
+                        <thead class="uppercase tracking-wider border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                            <tr>
+                                <th scope="col" class="px-4 py-3">Parámetro</th>
+                                <th scope="col" class="px-4 py-3">Vegetativo</th>
+                                <th scope="col" class="px-4 py-3">Floración</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paramsTableBody" class="text-gray-700 dark:text-gray-300">
+                            <!-- Se llena con JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN DARK MODE
+        // ==========================================
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            }
+        });
+
+        // ==========================================
+        // DATOS ESTATICOS (Diagnóstico y Rangos)
+        // ==========================================
+        const DIAGNOSTIC_RULES = [
+            { id: 1, fase: "Vegetativo", sintoma: "Hojas amarillas en la base (viejas)", causa: "Deficiencia de Nitrógeno (N) o pH bajo.", accion: "Verificar pH y EC. Aumentar NPK de vegetativo un 20%." },
+            { id: 2, fase: "Floración", sintoma: "Puntas quemadas / Garra", causa: "Exceso de nutrientes (Nutrient Burn).", accion: "Lavado de raíces. Reducir EC en un 25%." },
+            { id: 3, fase: "Floración", sintoma: "Manchas marrones en hojas medias", causa: "Deficiencia Ca/Mg o VPD incorrecto.", accion: "Verificar VPD. Aplicar CalMag." },
+            { id: 4, fase: "Vegetativo", sintoma: "Hojas caídas y pesadas pero verdes", causa: "Exceso de riego.", accion: "Detener riego. Dejar secar sustrato." },
+            { id: 5, fase: "Floración", sintoma: "Blanqueamiento superior", causa: "Estrés lumínico.", accion: "Subir luces 20cm o bajar potencia." }
+        ];
+
+        const PARAM_RANGES = [
+            { param: "Temp. Día", veg: "22-28°C", flow: "20-26°C" },
+            { param: "Temp. Noche", veg: "18-22°C", flow: "18-22°C" },
+            { param: "Humedad %", veg: "55-70%", flow: "40-50%" },
+            { param: "pH", veg: "5.8-6.2", flow: "5.8-6.2" },
+            { param: "EC", veg: "0.8-1.5", flow: "1.2-2.0" },
+            { param: "VPD (kPa)", veg: "0.8-1.1", flow: "1.0-1.5" }
+        ];
+
+        // ==========================================
+        // GESTIÓN DE LOTES Y BITÁCORA (NUEVO)
+        // ==========================================
+        
+        // Datos en memoria
+        let BATCHES = [
+            // Lote de ejemplo inicial
+            { id: 101, name: "Indoor Carpa 1", genetics: "OG Kush", startDate: "2023-11-01", phase: "Vegetativo" }
+        ];
+        
+        let LOGS = [
+            { id: 1, batchId: 101, date: "01/11 10:00", type: "Riego", note: "Inicio de ciclo. Agua pH 6.0" }
+        ];
+
+        // Elementos DOM Lotes
+        const toggleBatchForm = document.getElementById('toggleBatchForm');
+        const batchFormContainer = document.getElementById('batchFormContainer');
+        const batchChevron = document.getElementById('batchChevron');
+        const btnSaveBatch = document.getElementById('btnSaveBatch');
+        const batchNameInput = document.getElementById('batchName');
+        const batchGeneticsInput = document.getElementById('batchGenetics');
+        const batchDateInput = document.getElementById('batchDate');
+        const batchPhaseInput = document.getElementById('batchPhase');
+        
+        // Elementos DOM Bitácora
+        const logBatchSelect = document.getElementById('logBatchSelect');
+        const btnAddLog = document.getElementById('btnAddLog');
+        const logTypeInput = document.getElementById('logType');
+        const logNoteInput = document.getElementById('logNote');
+        const logContainer = document.getElementById('logContainer');
+        const logCount = document.getElementById('logCount');
+
+        // Toggle formulario de lote
+        toggleBatchForm.addEventListener('click', () => {
+            batchFormContainer.classList.toggle('hidden');
+            batchChevron.classList.toggle('rotate-180');
+        });
+
+        // Función: Guardar Nuevo Lote
+        btnSaveBatch.addEventListener('click', () => {
+            const name = batchNameInput.value.trim();
+            const genetics = batchGeneticsInput.value.trim();
+            const date = batchDateInput.value;
+            const phase = batchPhaseInput.value;
+
+            if (!name) {
+                alert("El nombre del lote es obligatorio.");
+                return;
+            }
+
+            const newBatch = {
+                id: Date.now(),
+                name: name,
+                genetics: genetics || "Desconocida",
+                startDate: date || new Date().toISOString().split('T')[0],
+                phase: phase
+            };
+
+            BATCHES.push(newBatch);
+            
+            // Limpiar y cerrar formulario
+            batchNameInput.value = '';
+            batchGeneticsInput.value = '';
+            batchDateInput.value = '';
+            batchFormContainer.classList.add('hidden');
+            batchChevron.classList.remove('rotate-180');
+
+            updateBatchSelect();
+            alert(`Lote "${name}" creado exitosamente.`);
+        });
+
+        // Función: Actualizar Select de Lotes en Bitácora
+        function updateBatchSelect() {
+            logBatchSelect.innerHTML = '<option value="">-- Selecciona un Lote --</option>';
+            BATCHES.forEach(batch => {
+                const option = document.createElement('option');
+                option.value = batch.id;
+                // Mostrar Nombre + Genética en el dropdown
+                option.textContent = `${batch.name} (${batch.genetics})`;
+                logBatchSelect.appendChild(option);
+            });
+        }
+
+        // Función: Renderizar Logs con trazabilidad
+        function renderLogs() {
+            logContainer.innerHTML = '';
+            logCount.textContent = `${LOGS.length} registros`;
+
+            if (LOGS.length === 0) {
+                logContainer.innerHTML = '<div class="text-center text-gray-400 dark:text-gray-500 text-sm py-4 italic">No hay registros.</div>';
+                return;
+            }
+
+            // Ordenar: más reciente primero
+            const sortedLogs = [...LOGS].reverse();
+
+            sortedLogs.forEach(log => {
+                // Buscar nombre del lote asociado
+                const relatedBatch = BATCHES.find(b => b.id == log.batchId);
+                const batchName = relatedBatch ? relatedBatch.name : "Lote Eliminado";
+
+                const item = document.createElement('div');
+                item.className = "flex flex-col p-3 bg-white dark:bg-gray-700/50 rounded border border-gray-100 dark:border-gray-600 shadow-sm hover:shadow-md transition";
+                
+                let icon = '📌';
+                let colorClass = 'text-gray-500';
+                if(log.type === 'Riego') { icon = '💧'; colorClass = 'text-blue-500'; }
+                if(log.type === 'Nutrientes') { icon = '🧪'; colorClass = 'text-green-500'; }
+                if(log.type === 'Poda') { icon = '✂️'; colorClass = 'text-red-500'; }
+                if(log.type === 'Cambio Fase') { icon = '🔄'; colorClass = 'text-purple-500'; }
+
+                item.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <div class="flex items-center">
+                            <span class="text-xs font-bold bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded mr-2">
+                                ${batchName}
+                            </span>
+                            <span class="text-xs text-gray-400">${log.date}</span>
+                        </div>
+                        <span class="text-xs font-bold ${colorClass}">${icon} ${log.type}</span>
+                    </div>
+                    <div class="text-sm text-gray-700 dark:text-gray-200 pl-1">
+                        ${log.note}
+                    </div>
+                `;
+                logContainer.appendChild(item);
+            });
+        }
+
+        // Función: Añadir Log
+        btnAddLog.addEventListener('click', () => {
+            const batchId = logBatchSelect.value;
+            const note = logNoteInput.value.trim();
+            const type = logTypeInput.value;
+
+            if (!batchId) {
+                alert("Por favor, selecciona un Lote/Planta para asociar este registro.");
+                return;
+            }
+            if (!note) {
+                alert("Escribe una nota o tarea.");
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = `${now.getDate()}/${now.getMonth()+1} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            LOGS.push({
+                id: Date.now(),
+                batchId: batchId,
+                date: dateStr,
+                type: type,
+                note: note
+            });
+
+            logNoteInput.value = ''; 
+            renderLogs();
+        });
+
+        // Inicialización
+        updateBatchSelect();
+        renderLogs();
+
+        // ==========================================
+        // LÓGICA PREVIA (Diagnóstico, VPD, Tablas)
+        // ==========================================
+        const inputFase = document.getElementById('inputFase');
+        const inputSintoma = document.getElementById('inputSintoma');
+        const btnDiagnosticar = document.getElementById('btnDiagnosticar');
+        const diagnosticResult = document.getElementById('diagnosticResult');
+        const resultCausa = document.getElementById('resultCausa');
+        const resultAccion = document.getElementById('resultAccion');
+
+        inputFase.addEventListener('change', (e) => {
+            const selectedFase = e.target.value;
+            inputSintoma.innerHTML = '<option value="">Selecciona el síntoma...</option>';
+            if (!selectedFase) { inputSintoma.disabled = true; return; }
+            const filteredRules = DIAGNOSTIC_RULES.filter(rule => rule.fase === selectedFase);
+            filteredRules.forEach(rule => {
+                const option = document.createElement('option');
+                option.value = rule.id; option.textContent = rule.sintoma;
+                inputSintoma.appendChild(option);
+            });
+            inputSintoma.disabled = false;
+            diagnosticResult.classList.add('hidden');
+        });
+
+        btnDiagnosticar.addEventListener('click', () => {
+            const ruleId = parseInt(inputSintoma.value);
+            if (!ruleId) return;
+            const rule = DIAGNOSTIC_RULES.find(r => r.id === ruleId);
+            if (rule) {
+                resultCausa.textContent = rule.causa;
+                resultAccion.textContent = rule.accion;
+                diagnosticResult.classList.remove('hidden');
+                diagnosticResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+
+        // VPD Calc
+        const inputTemp = document.getElementById('inputTemp');
+        const inputRh = document.getElementById('inputRh');
+        const vpdValueDisplay = document.getElementById('vpdValue');
+        const vpdStatusDisplay = document.getElementById('vpdStatus');
+
+        function calculateVPD() {
+            const T = parseFloat(inputTemp.value);
+            const RH = parseFloat(inputRh.value);
+            if (isNaN(T) || isNaN(RH)) {
+                vpdValueDisplay.textContent = "-- kPa"; vpdStatusDisplay.textContent = "Ingresa datos..."; return;
+            }
+            const SVP = 0.61078 * Math.exp((17.27 * T) / (T + 237.3));
+            const AVP = SVP * (RH / 100);
+            const VPD = (SVP - AVP).toFixed(2);
+            vpdValueDisplay.textContent = `${VPD} kPa`;
+            
+            let statusText = "", statusClass = "";
+            if (VPD < 0.4) { statusText = "PELIGRO: Moho"; statusClass = "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200"; }
+            else if (VPD >= 0.4 && VPD < 0.8) { statusText = "Bajo"; statusClass = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200"; }
+            else if (VPD >= 0.8 && VPD <= 1.5) { statusText = "✅ Óptimo"; statusClass = "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200"; }
+            else { statusText = "Alto (Seco)"; statusClass = "bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200"; }
+            
+            vpdStatusDisplay.textContent = statusText;
+            vpdStatusDisplay.className = `text-xs md:text-sm font-bold px-3 py-1 rounded inline-block ${statusClass}`;
+        }
+        inputTemp.addEventListener('input', calculateVPD);
+        inputRh.addEventListener('input', calculateVPD);
+
+        // Tabla Rangos
+        const tableBody = document.getElementById('paramsTableBody');
+        PARAM_RANGES.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.className = index % 2 === 0 ? "bg-white dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-750";
+            row.innerHTML = `<td class="px-4 py-3 font-medium border-b border-gray-100 dark:border-gray-700">${item.param}</td><td class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 text-green-700 dark:text-green-400">${item.veg}</td><td class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 text-purple-700 dark:text-purple-400 font-bold">${item.flow}</td>`;
+            tableBody.appendChild(row);
+        });
+
+    </script>
+</body>
+</html>

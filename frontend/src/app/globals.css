@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * PLATA LINDA - SISTEMA DE COLORES PERSONALIZABLE
+ * 
+ * Este archivo contiene todas las variables de color de la aplicación.
+ * Para cambiar la paleta de colores, modifica los valores HSL en las secciones :root y .dark
+ * 
+ * FORMATO: --nombre-variable: H S% L%;
+ * H = Hue (0-360) - Tono del color
+ * S = Saturation (0-100%) - Saturación
+ * L = Lightness (0-100%) - Luminosidad
+ * 
+ * PALETA ACTUAL: Verde/Emerald (Cultivadores)
+ * Para cambiar a otra paleta, reemplaza los valores de --primary y --accent
+ */
+
+@layer base {
+  :root {
+    /* === MODO CLARO === */
+
+    /* Fondos principales */
+    --background: 0 0% 100%;
+    /* Blanco puro */
+    --foreground: 222.2 84% 4.9%;
+    /* Texto principal oscuro */
+
+    /* Cards y contenedores */
+    --card: 0 0% 100%;
+    /* Fondo de cards */
+    --card-foreground: 222.2 84% 4.9%;
+    /* Texto en cards */
+
+    /* Popovers y dropdowns */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* COLOR PRIMARIO - Verde/Emerald (Cultivadores) */
+    /* CAMBIAR AQUÍ para nueva paleta de marca */
+    --primary: 142.1 76.2% 36.3%;
+    /* Verde principal */
+    --primary-foreground: 355.7 100% 97.3%;
+    /* Texto sobre verde */
+
+    /* COLOR SECUNDARIO */
+    --secondary: 210 40% 96.1%;
+    /* Gris claro */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* Elementos muteados/deshabilitados */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* COLOR DE ACENTO - Complementario al primario */
+    /* CAMBIAR AQUÍ para color de acento */
+    --accent: 142.1 76.2% 45%;
+    /* Verde más claro */
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    /* Destructivo (eliminar, errores) */
+    --destructive: 0 84.2% 60.2%;
+    /* Rojo */
+    --destructive-foreground: 210 40% 98%;
+
+    /* Bordes e inputs */
+    --border: 214.3 31.8% 91.4%;
+    /* Bordes sutiles */
+    --input: 214.3 31.8% 91.4%;
+    /* Bordes de inputs */
+    --ring: 142.1 76.2% 36.3%;
+    /* Focus ring (mismo que primary) */
+
+    /* Border radius global */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* === MODO OSCURO === */
+
+    /* Fondos principales */
+    --background: 222.2 84% 4.9%;
+    /* Fondo oscuro principal */
+    --foreground: 210 40% 98%;
+    /* Texto claro */
+
+    /* Cards y contenedores */
+    --card: 222.2 84% 4.9%;
+    /* Fondo de cards oscuro */
+    --card-foreground: 210 40% 98%;
+    /* Texto en cards */
+
+    /* Popovers y dropdowns */
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* COLOR PRIMARIO - Verde/Emerald (Cultivadores) */
+    /* CAMBIAR AQUÍ para nueva paleta de marca en modo oscuro */
+    --primary: 142.1 70.6% 45.3%;
+    /* Verde más brillante para oscuro */
+    --primary-foreground: 144.9 80.4% 10%;
+    /* Texto sobre verde */
+
+    /* COLOR SECUNDARIO */
+    --secondary: 217.2 32.6% 17.5%;
+    /* Gris oscuro */
+    --secondary-foreground: 210 40% 98%;
+
+    /* Elementos muteados/deshabilitados */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    /* COLOR DE ACENTO - Complementario al primario */
+    /* CAMBIAR AQUÍ para color de acento en modo oscuro */
+    --accent: 142.1 70.6% 50%;
+    /* Verde brillante */
+    --accent-foreground: 210 40% 98%;
+
+    /* Destructivo (eliminar, errores) */
+    --destructive: 0 62.8% 30.6%;
+    /* Rojo oscuro */
+    --destructive-foreground: 210 40% 98%;
+
+    /* Bordes e inputs */
+    --border: 217.2 32.6% 17.5%;
+    /* Bordes sutiles oscuros */
+    --input: 217.2 32.6% 17.5%;
+    /* Bordes de inputs */
+    --ring: 142.4 71.8% 29.2%;
+    /* Focus ring */
+  }
+}
+
+/**
+ * GUÍA DE PALETAS ALTERNATIVAS
+ * 
+ * Copia y pega estos valores en --primary y --accent según la paleta deseada:
+ * 
+ * AZUL (Tecnología):
+ * Claro: --primary: 217 91% 60%;
+ * Oscuro: --primary: 217 91% 65%;
+ * 
+ * PÚRPURA (Premium):
+ * Claro: --primary: 262 83% 58%;
+ * Oscuro: --primary: 262 83% 65%;
+ * 
+ * NARANJA (Energía):
+ * Claro: --primary: 25 95% 53%;
+ * Oscuro: --primary: 25 95% 60%;
+ * 
+ * TEAL (Moderno):
+ * Claro: --primary: 173 80% 40%;
+ * Oscuro: --primary: 173 80% 50%;
+ * 
+ * ROSA (Creativo):
+ * Claro: --primary: 330 81% 60%;
+ * Oscuro: --primary: 330 81% 65%;
+ */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -1,0 +1,113 @@
+Contenido del archivo: Cultivo Asistido por IA: Diagnóstico y Trazabilidad Digital
+
+La aplicación debe enfocarse en resolver los principales puntos de dolor del cultivador: la ambigüedad de los síntomas que genera bloqueo mental y la sobrecarga de información que abruma al novato. El objetivo central es actuar como un "solucionador de problemas" y un "manual de acompañamiento" que ofrezca herramientas de control y sistematización.
+A continuación, se propone un conjunto de funcionalidades simples, prácticas y de alto impacto real, basadas directamente en las necesidades y oportunidades detectadas en las fuentes:
+Funcionalidades Clave de la Aplicación para Cultivadores
+1. Solucionador de Problemas por Inteligencia Artificial (IA)
+Esta es la funcionalidad de mayor impacto, ya que aborda la frustración central de que los síntomas en las plantas son "muy ambiguos" y vuelven loco al cultivador.
+Funcionalidad 1: Diagnóstico Contextualizado (IA): Permite al usuario subir fotos de la planta enferma. El sistema usa IA para cruzar la imagen con datos ambientales en tiempo real (EC, pH, VPD) y el estadio de crecimiento de la planta. Impacto / Beneficio: Elimina la ambigüedad de los síntomas y supera el bloqueo mental que impide la acción. Fundamento en las Fuentes:El mercado tiene la oportunidad de desarrollar un "solucionador de problemas" integrado que ofrezca un diagnóstico singular y contextualizado mediante IA.
+Funcionalidad 2: Acción Correctiva Única: Después del diagnóstico, la app proporciona una acción correctiva única y precisa (ej.: "Realiza lavado de raíces y ajusta el pH del agua a 6.2"). Impacto / Beneficio: Previene el ciclo vicioso de la ineficacia (ensayo y error) y la tendencia a probar "toda la mierda avanzada primero" que resulta contraproducente. Fundamento en las Fuentes: La respuesta debe ser una acción correctiva única y específica, lo que cumple con la petición implícita de una guía sencilla y práctica.
+2. Módulo de Trazabilidad y Protocolos Simplificados
+Esta funcionalidad aborda la necesidad de disciplina y constancia y contrarresta la sobredosis de información inicial.
+Funcionalidad 3: Calendario de Cultivo por Fases: Ofrece protocolos claros y consistentes y guías semana a semana para la floración. El cultivador puede registrar y seguir su plan de riego, nutrición e iluminación. Impacto / Beneficio: Permite la sistematización y asesoría simplificada, cumpliendo con la estandarización que buscan los usuarios inexpertos. Fundamento en las Fuentes: Se debe desarrollar una aplicación para seguimiento y calendarización que ofrezca contenidos altamente estructurados.
+Funcionalidad 4: Registro de Parámetros Críticos (Bitácora Digital): Permite al usuario registrar los valores medidos (pH, EC, temperatura, humedad) y las acciones tomadas (fertilización, poda). Impacto / Beneficio: Mejora la trazabilidad para reducir errores humanos y facilita la constancia necesaria en el proceso. Se pueden usar hojas de cálculo para analizar y ordenar información consistente.
+Funcionalidad 5: Protocolos Adaptativos (Oportunidad Futura): Permite ingresar la genética de la planta cultivada y ajusta automáticamente el protocolo de Fertirrigación/VPD optimizado. Impacto / Beneficio: Ofrece personalización y reduce el ensayo y error asociado a la alta variabilidad genética.
+3. Herramientas de Control Ambiental Simplificado
+Aborda el alto costo del fracaso y la dificultad de manejar parámetros técnicos complejos.
+Funcionalidad 6: Calculadora y Monitor de VPD: Muestra el valor del Déficit de Presión de Vapor (VPD) en tiempo real (si está conectado a un sensor, siguiendo la tendencia de mercado) y lo compara con el VPD ideal para cada etapa de crecimiento. Impacto / Beneficio: El control del VPD es la clave para la salud y la fotosíntesis, previniendo activamente problemas como el estrés hídrico, el moho y las plagas. Fundamento en las Fuentes: Las herramientas digitales y calculadoras de VPD ya están disponibles y son críticas para el monitoreo continuo y la reducción de fluctuaciones.
+Funcionalidad 7: Alertas de Desviación: Notifica al cultivador cuando parámetros como el pH o la EC se encuentran fuera del rango de seguridad o cuando un fallo de equipo podría llevar a humedad del 100%. Impacto / Beneficio: Ayuda a monitorear automáticamente parámetros críticos para prevenir el bloqueo de nutrientes y reduce la preocupación angustiante por la humedad.
+
+Estas funcionalidades buscan ofrecer soluciones integrales que combinen la Inteligencia (IA para diagnóstico) con la Democratización (simplificación de protocolos técnicos), ayudando al cultivador a pequeña escala a superar la parálisis y la sobrecarga informativa.
+
+La aplicación debe enfocarse en resolver los principales puntos de dolor del cultivador: la ambigüedad de los síntomas que genera bloqueo mental y la sobrecarga de información que abruma al novato. El objetivo central es actuar como un "solucionador de problemas" y un "manual de acompañamiento" que ofrezca herramientas de control y sistematización.
+A continuación, se propone un conjunto de funcionalidades simples, prácticas y de alto impacto real, basadas directamente en las necesidades y oportunidades detectadas en las fuentes:
+Funcionalidades Clave de la Aplicación para Cultivadores
+1. Solucionador de Problemas por Inteligencia Artificial (IA)
+Esta es la funcionalidad de mayor impacto, ya que aborda la frustración central de que los síntomas en las plantas son "muy ambiguos" y vuelven loco al cultivador.
+Funcionalidad
+Impacto / Beneficio
+Fundamento en las Fuentes
+Diagnóstico Contextualizado (IA): Permite al usuario subir fotos de la planta enferma. El sistema usa IA para cruzar la imagen con datos ambientales en tiempo real (EC, pH, VPD) y el estadio de crecimiento de la planta.
+Elimina la ambigüedad de los síntomas y supera el bloqueo mental que impide la acción.
+El mercado tiene la oportunidad de desarrollar un "solucionador de problemas" integrado que ofrezca un diagnóstico singular y contextualizado mediante IA.
+Acción Correctiva Única: Después del diagnóstico, la app proporciona una acción correctiva única y precisa (ej.: "Realiza lavado de raíces y ajusta el pH del agua a 6.2").
+Previene el ciclo vicioso de la ineficacia (ensayo y error) y la tendencia a probar "toda la mierda avanzada primero" que resulta contraproducente.
+La respuesta debe ser una acción correctiva única y específica, lo que cumple con la petición implícita de una guía sencilla y práctica.
+2. Módulo de Trazabilidad y Protocolos Simplificados
+Esta funcionalidad aborda la necesidad de disciplina y constancia y contrarresta la sobredosis de información inicial.
+Funcionalidad
+Impacto / Beneficio
+Fundamento en las Fuentes
+Calendario de Cultivo por Fases: Ofrece protocolos claros y consistentes y guías semana a semana para la floración. El cultivador puede registrar y seguir su plan de riego, nutrición e iluminación.
+Permite la sistematización y asesoría simplificada, cumpliendo con la estandarización que buscan los usuarios inexpertos.
+Se debe desarrollar una aplicación para seguimiento y calendarización que ofrezca contenidos altamente estructurados.
+Registro de Parámetros Críticos (Bitácora Digital): Permite al usuario registrar los valores medidos (pH, EC, temperatura, humedad) y las acciones tomadas (fertilización, poda).
+Mejora la trazabilidad para reducir errores humanos y facilita la constancia necesaria en el proceso. Se pueden usar hojas de cálculo para analizar y ordenar información consistente.
+Protocolos Adaptativos (Oportunidad Futura): Permite ingresar la genética de la planta cultivada y ajusta automáticamente el protocolo de Fertirrigación/VPD optimizado.
+Ofrece personalización y reduce el ensayo y error asociado a la alta variabilidad genética.
+3. Herramientas de Control Ambiental Simplificado
+Aborda el alto costo del fracaso y la dificultad de manejar parámetros técnicos complejos.
+Funcionalidad
+Impacto / Beneficio
+Fundamento en las Fuentes
+Calculadora y Monitor de VPD: Muestra el valor del Déficit de Presión de Vapor (VPD) en tiempo real (si está conectado a un sensor, siguiendo la tendencia de mercado) y lo compara con el VPD ideal para cada etapa de crecimiento.
+El control del VPD es la clave para la salud y la fotosíntesis, previniendo activamente problemas como el estrés hídrico, el moho y las plagas.
+Las herramientas digitales y calculadoras de VPD ya están disponibles y son críticas para el monitoreo continuo y la reducción de fluctuaciones.
+Alertas de Desviación: Notifica al cultivador cuando parámetros como el pH o la EC se encuentran fuera del rango de seguridad o cuando un fallo de equipo podría llevar a humedad del 100%.
+Ayuda a monitorear automáticamente parámetros críticos para prevenir el bloqueo de nutrientes y reduce la preocupación angustiante por la humedad.
+Estas funcionalidades buscan ofrecer soluciones integrales que combinen la Inteligencia (IA para diagnóstico) con la Democratización (simplificación de protocolos técnicos), ayudando al cultivador a pequeña escala a superar la parálisis y la sobrecarga informativa.
+
+
+Contenido del archivo: Historia de Usuario Santa Montaña.pdf
+
+Elicitación
+De las entrevistas y charlas realizadas hasta el momento, se identifican los siguientes requerimientos clave:
+    • Registro y seguimiento de lotes.
+    • Asignación de etiquetas por etapa (germinación, plántula/esqueje, vegetación, floración).
+    • Carga de fotos por etapa para seguimiento visual.
+    • Registro de mediciones diarias:
+    • Sala de cultivo/hábitat: temperatura, humedad relativa, CO₂.
+    • Suelo: pH del agua de riego, electroconductividad, partes por millón (PPM), humedad.
+    • Reportes de evolución genética y condiciones ambientales por lote y etapa.
+    • Gestión de stock de plantas en tiempo real.
+    • Acceso móvil y desde tablets.
+Conocimiento del Negocio
+La producción de plantas medicinales exige control preciso tanto de las condiciones del ambiente como del sustrato. La calidad genética depende de un seguimiento detallado por etapas, respaldado con imágenes y mediciones diarias. Al centralizar la información, se facilita la toma de decisiones, la optimización de recursos y el cumplimiento de estándares de calidad.
+
+Propuesta de Solución
+Se plantea un sistema web responsive, desarrollado con Java Spring Boot (backend) y REACT (frontend).
+Opciones de implementación:
+En la nube
+Pros: acceso remoto, escalabilidad, respaldos automáticos.
+Contras: dependencia de internet, costos de hosting.
+En servidor local
+		Pros: control interno de datos, funcionamiento sin internet.
+		Contras: inversión en hardware, mantenimiento técnico costoso.
+Módulos Propuestos
+    • Gestión de Lotes: Registro y seguimiento de lotes con identificación única.
+    • Etapas de Cultivo: Control de germinación, plántula/esqueje, vegetación y floración.
+    • Carga Fotográfica: Registro visual de cada etapa.
+    • Mediciones Diarias:
+    • Hábitat (temperatura, humedad relativa, CO₂).
+    • Suelo (pH, electroconductividad, PPM, humedad).
+    • Reportes y Análisis:
+    • Evolución genética con fotos por lote.
+    • Historial de parámetros ambientales y del suelo.
+    • Alertas preventivas para optimizar condiciones.
+    • Gestión de Stock: Inventario en tiempo real y reportes de disponibilidad.
+    • Administración: Control de usuarios, roles y configuraciones.
+
+Requerimientos
+Funcionales
+    • Registrar lotes y asignar etapas.
+    • Subir fotografías por etapa.
+    • Cargar mediciones diarias de hábitat y suelo.
+    • Generar reportes de evolución genética y parámetros de cultivo.
+    • Administrar stock y consultar reportes globales.
+    • Acceder desde dispositivos móviles.
+No Funcionales
+    • Seguridad y control de accesos con roles.
+    • Interfaz responsive y amigable.
+    • Escalabilidad del sistema para mayor volumen de datos.
+    • Integridad y respaldo de las mediciones y fotos.
+    • Buen rendimiento con múltiples usuarios concurrentes.

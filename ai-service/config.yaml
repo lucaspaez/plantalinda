@@ -1,0 +1,19 @@
+# AI Model Configuration
+# Change the model_name to use different pre-trained models from Hugging Face
+
+# Current model: Plant disease detection
+model_name: "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
+
+# Alternative models you can try:
+# model_name: "nateraw/vit-base-beans"  # Bean disease detection
+# model_name: "Kaludi/food-category-classification-v2.0"  # General food/plant classifier
+# model_name: "google/vit-base-patch16-224"  # General vision transformer
+
+# You can also use custom models:
+# 1. Train your own model on cannabis-specific data
+# 2. Upload to Hugging Face
+# 3. Put the model name here
+
+# Model settings
+confidence_threshold: 0.5
+use_gpu: false  # Set to true if you have CUDA-capable GPU

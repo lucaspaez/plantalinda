@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Diagnóstico de Cultivo MVP</title>
+    <!-- Usamos Tailwind CSS para estilos rápidos y responsivos sin archivo CSS externo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos para mejorar la UI -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados mínimos para complementar Tailwind */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0fdf4; /* Verde muy claro */
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-green-700 text-white p-4 shadow-lg">
+        <div class="container mx-auto max-w-4xl flex items-center justify-between">
+            <h1 class="text-xl md:text-2xl font-bold"><i class="fa-solid fa-leaf mr-2"></i>Asistente de Cultivo</h1>
+            <span class="text-xs bg-green-900 px-2 py-1 rounded">MVP v1.0</span>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-4xl p-4 space-y-6">
+
+        <!-- SECCIÓN 1: SOLUCIONADOR DE PROBLEMAS -->
+        <section class="bg-white rounded-xl shadow-md overflow-hidden card border-l-4 border-green-500">
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-4 text-green-800 border-b pb-2">
+                    <i class="fa-solid fa-stethoscope mr-2"></i>Diagnóstico de Problemas
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Input: Fase -->
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-600">1. Fase de Cultivo</label>
+                        <select id="inputFase" class="w-full p-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecciona la fase...</option>
+                            <option value="Vegetativo">Vegetativo</option>
+                            <option value="Floración">Floración</option>
+                        </select>
+                    </div>
+
+                    <!-- Input: Síntoma (Se llena dinámicamente) -->
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-600">2. Síntoma Visual</label>
+                        <select id="inputSintoma" class="w-full p-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500" disabled>
+                            <option value="">Primero selecciona una fase...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="btnDiagnosticar" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-md">
+                    Diagnosticar Problema
+                </button>
+
+                <!-- Output Diagnóstico -->
+                <div id="diagnosticResult" class="hidden mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-bold text-red-600 mb-1"><i class="fa-solid fa-circle-exclamation mr-2"></i>Causa Probable:</h3>
+                    <p id="resultCausa" class="mb-4 text-gray-800 font-medium"></p>
+                    
+                    <h3 class="text-lg font-bold text-green-700 mb-1"><i class="fa-solid fa-clipboard-check mr-2"></i>Acción Correctiva Única:</h3>
+                    <div class="bg-green-100 p-4 rounded border-l-4 border-green-600">
+                        <p id="resultAccion" class="text-gray-900"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CALCULADORA VPD -->
+        <section class="bg-white rounded-xl shadow-md overflow-hidden card border-l-4 border-blue-500">
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-4 text-blue-800 border-b pb-2">
+                    <i class="fa-solid fa-calculator mr-2"></i>Calculadora VPD Simplificada
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Input: Temperatura -->
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-600">Temperatura (°C)</label>
+                        <input type="number" id="inputTemp" class="w-full p-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: 25">
+                    </div>
+
+                    <!-- Input: Humedad -->
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-600">Humedad Relativa (%)</label>
+                        <input type="number" id="inputRh" class="w-full p-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: 60">
+                    </div>
+                </div>
+
+                <!-- Resultado VPD en tiempo real -->
+                <div class="bg-blue-50 rounded-lg p-4 text-center border border-blue-100">
+                    <p class="text-sm text-gray-500 uppercase tracking-wide">Déficit de Presión de Vapor</p>
+                    <div id="vpdValue" class="text-4xl font-bold text-blue-900 my-2">-- kPa</div>
+                    <p id="vpdStatus" class="text-sm font-bold px-3 py-1 rounded inline-block bg-gray-200 text-gray-500">Esperando datos...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: TABLAS DE REFERENCIA -->
+        <section class="bg-white rounded-xl shadow-md overflow-hidden card border-l-4 border-purple-500">
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-4 text-purple-800 border-b pb-2">
+                    <i class="fa-solid fa-table-list mr-2"></i>Protocolos: Rangos Ideales
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-left text-sm whitespace-nowrap">
+                        <thead class="uppercase tracking-wider border-b-2 border-gray-200 bg-gray-50 text-gray-600">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Parámetro</th>
+                                <th scope="col" class="px-6 py-3">Vegetativo</th>
+                                <th scope="col" class="px-6 py-3">Floración</th>
+                                <th scope="col" class="px-6 py-3">Notas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paramsTableBody" class="text-gray-700">
+                            <!-- Se llena con JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center p-6 text-gray-500 text-sm">
+        &copy; 2025 Asistente de Diagnóstico MVP
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // ==========================================
+        // 1. ESTRUCTURA DE DATOS (Simulación BD)
+        // ==========================================
+
+        const DIAGNOSTIC_RULES = [
+            {
+                id: 1,
+                fase: "Vegetativo",
+                sintoma: "Hojas amarillas en la base (hojas viejas)",
+                causa: "Deficiencia de Nitrógeno (N) o Bloqueo por pH bajo.",
+                accion: "Verificar pH y EC. Si el pH es bajo, elevarlo inmediatamente (rango ideal: 5.8-6.2). Aumentar dosis de Nutrientes NPK para Vegetativo en 20%."
+            },
+            {
+                id: 2,
+                fase: "Floración",
+                sintoma: "Puntas de hojas quemadas o en forma de garra",
+                causa: "Exceso de nutrientes (Nutrient Burn).",
+                accion: "Realizar lavado de raíces con agua pura pH balanceada. Reducir la Concentración de nutrientes (EC) en un 25% en el siguiente riego."
+            },
+            {
+                id: 3,
+                fase: "Floración",
+                sintoma: "Manchas marrones secas en hojas medias/altas",
+                causa: "Deficiencia de Calcio (Ca) o Magnesio (Mg), posiblemente por VPD descontrolado.",
+                accion: "Verificar el VPD. Aplicar un suplemento de Calcio/Magnesio (CalMag) en la mitad de la dosis recomendada."
+            },
+            {
+                id: 4,
+                fase: "Vegetativo",
+                sintoma: "Hojas caídas y pesadas (como garras) pero verdes",
+                causa: "Exceso de riego (Raíces ahogadas).",
+                accion: "Detener el riego inmediatamente. Dejar secar el sustrato hasta que la maceta se sienta ligera. Aumentar ventilación."
+            },
+            {
+                id: 5,
+                fase: "Floración",
+                sintoma: "Hojas superiores decoloradas (blanqueamiento)",
+                causa: "Estrés lumínico (Luz demasiado cerca).",
+                accion: "Subir las luces 15-30cm inmediatamente. Si no es posible, reducir la intensidad del dimmer al 75%."
+            }
+        ];
+
+        const PARAM_RANGES = [
+            { param: "Temperatura (Día)", veg: "22°C - 28°C", flow: "20°C - 26°C", nota: "Evitar >30°C" },
+            { param: "Temperatura (Noche)", veg: "18°C - 22°C", flow: "18°C - 22°C", nota: "Dif. máx 5-8°C" },
+            { param: "Humedad Relativa", veg: "55% - 70%", flow: "40% - 50%", nota: "Bajar en flora tardía" },
+            { param: "pH (Sustrato/Coco)", veg: "5.8 - 6.2", flow: "5.8 - 6.2", nota: "Crucial para absorción" },
+            { param: "EC (Electroconductividad)", veg: "0.8 - 1.5", flow: "1.2 - 2.0", nota: "Depende de la genética" },
+            { param: "VPD (kPa)", veg: "0.8 - 1.1", flow: "1.0 - 1.5", nota: "Presión de vapor" }
+        ];
+
+        // ==========================================
+        // 2. LÓGICA DE DIAGNÓSTICO
+        // ==========================================
+
+        const inputFase = document.getElementById('inputFase');
+        const inputSintoma = document.getElementById('inputSintoma');
+        const btnDiagnosticar = document.getElementById('btnDiagnosticar');
+        const diagnosticResult = document.getElementById('diagnosticResult');
+        const resultCausa = document.getElementById('resultCausa');
+        const resultAccion = document.getElementById('resultAccion');
+
+        // Evento: Al cambiar la fase, filtrar los síntomas disponibles
+        inputFase.addEventListener('change', (e) => {
+            const selectedFase = e.target.value;
+            
+            // Limpiar dropdown de síntomas
+            inputSintoma.innerHTML = '<option value="">Selecciona el síntoma...</option>';
+            
+            if (!selectedFase) {
+                inputSintoma.disabled = true;
+                return;
+            }
+
+            // Filtrar reglas
+            const filteredRules = DIAGNOSTIC_RULES.filter(rule => rule.fase === selectedFase);
+            
+            // Llenar dropdown
+            filteredRules.forEach(rule => {
+                const option = document.createElement('option');
+                option.value = rule.id; // Usamos ID para buscar después
+                option.textContent = rule.sintoma;
+                inputSintoma.appendChild(option);
+            });
+
+            inputSintoma.disabled = false;
+            diagnosticResult.classList.add('hidden'); // Ocultar resultado anterior
+        });
+
+        // Evento: Botón Diagnosticar
+        btnDiagnosticar.addEventListener('click', () => {
+            const ruleId = parseInt(inputSintoma.value);
+            
+            if (!ruleId) {
+                // UI feedback simple (no alert)
+                btnDiagnosticar.innerText = "⚠️ Selecciona un síntoma primero";
+                setTimeout(() => btnDiagnosticar.innerText = "Diagnosticar Problema", 2000);
+                return;
+            }
+
+            // Buscar la regla completa
+            const rule = DIAGNOSTIC_RULES.find(r => r.id === ruleId);
+
+            if (rule) {
+                // Renderizar resultado
+                resultCausa.textContent = rule.causa;
+                resultAccion.textContent = rule.accion;
+                diagnosticResult.classList.remove('hidden');
+                
+                // Scroll suave hacia el resultado
+                diagnosticResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+
+        // ==========================================
+        // 3. LÓGICA CALCULADORA VPD
+        // ==========================================
+
+        const inputTemp = document.getElementById('inputTemp');
+        const inputRh = document.getElementById('inputRh');
+        const vpdValueDisplay = document.getElementById('vpdValue');
+        const vpdStatusDisplay = document.getElementById('vpdStatus');
+
+        function calculateVPD() {
+            const T = parseFloat(inputTemp.value);
+            const RH = parseFloat(inputRh.value);
+
+            if (isNaN(T) || isNaN(RH)) {
+                vpdValueDisplay.textContent = "-- kPa";
+                vpdStatusDisplay.textContent = "Esperando datos...";
+                vpdStatusDisplay.className = "text-sm font-bold px-3 py-1 rounded inline-block bg-gray-200 text-gray-500";
+                return;
+            }
+
+            // Fórmula de Magnus-Tetens para Presión de Vapor de Saturación (SVP)
+            // SVP = 0.61078 * exp((17.27 * T) / (T + 237.3))
+            const SVP = 0.61078 * Math.exp((17.27 * T) / (T + 237.3));
+
+            // Presión de Vapor Actual (AVP)
+            const AVP = SVP * (RH / 100);
+
+            // VPD = SVP - AVP
+            const VPD = (SVP - AVP).toFixed(2);
+
+            vpdValueDisplay.textContent = `${VPD} kPa`;
+
+            // Evaluación
+            let statusText = "";
+            let statusClass = "";
+
+            if (VPD < 0.4) {
+                statusText = "PELIGRO: Humedad extrema. Riesgo alto de moho.";
+                statusClass = "bg-red-100 text-red-800 border border-red-200";
+            } else if (VPD >= 0.4 && VPD < 0.8) {
+                statusText = "Bajo. Aceptable para esquejes/veg temprana. ¡Aumenta ventilación!";
+                statusClass = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+            } else if (VPD >= 0.8 && VPD <= 1.5) {
+                statusText = "✅ VPD Óptimo (Crecimiento y Floración)";
+                statusClass = "bg-green-100 text-green-800 border border-green-200";
+            } else {
+                statusText = "Alto. Ambiente muy seco. La planta cerrará estomas.";
+                statusClass = "bg-orange-100 text-orange-800 border border-orange-200";
+            }
+
+            vpdStatusDisplay.textContent = statusText;
+            vpdStatusDisplay.className = `text-sm font-bold px-3 py-1 rounded inline-block ${statusClass}`;
+        }
+
+        // Escuchar cambios en los inputs para cálculo en tiempo real
+        inputTemp.addEventListener('input', calculateVPD);
+        inputRh.addEventListener('input', calculateVPD);
+
+        // ==========================================
+        // 4. GENERAR TABLA DE REFERENCIA
+        // ==========================================
+
+        const tableBody = document.getElementById('paramsTableBody');
+
+        PARAM_RANGES.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.className = index % 2 === 0 ? "bg-white" : "bg-gray-50"; // Striped rows
+            
+            row.innerHTML = `
+                <td class="px-6 py-4 font-medium text-gray-900 border-b border-gray-100">${item.param}</td>
+                <td class="px-6 py-4 border-b border-gray-100 text-green-700">${item.veg}</td>
+                <td class="px-6 py-4 border-b border-gray-100 text-purple-700 font-bold">${item.flow}</td>
+                <td class="px-6 py-4 border-b border-gray-100 text-xs text-gray-500 italic">${item.nota}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+    </script>
+</body>
+</html>

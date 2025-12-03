@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Asistente de Diagnóstico de Cultivo — Full (Export/Import · Prioridad · Timeline)</title>
+<style>
+:root{
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --accent: #16a34a;
+  --danger: #dc2626;
+  --outline: #e6e7ea;
+  --glass: rgba(255,255,255,0.6);
+  --shadow: 0 6px 18px rgba(15,23,42,0.06);
+}
+html.dark {
+  --bg: #0b1220; --card: #0f1724; --text: #e6eef8; --muted: #9aa6ba;
+  --accent: #34d399; --danger: #fb7185; --outline: rgba(255,255,255,0.06);
+  --glass: rgba(255,255,255,0.02); --shadow: 0 8px 20px rgba(2,6,23,0.6);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter,system-ui,Arial; background:linear-gradient(180deg,var(--bg),#fff0 200px);
+  color:var(--text); padding:16px; -webkit-font-smoothing:antialiased;
+}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;box-shadow:var(--shadow)}
+h1{font-size:1.05rem;margin:0}
+.subtitle{font-size:0.78rem;color:var(--muted)}
+.container{display:grid;grid-template-columns:1fr;gap:12px;max-width:1200px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--outline);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+label{display:block;font-size:0.78rem;color:var(--muted);margin-bottom:6px}
+select,input,textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--outline);background:transparent;color:var(--text)}
+textarea{min-height:64px;resize:vertical}
+.row{display:flex;gap:8px;margin-top:8px}
+.col{flex:1;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:10px;border:0;cursor:pointer;background:var(--accent);color:white;font-weight:600}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--outline)}
+.btn.warn{background:var(--danger)}
+.small{font-size:0.9rem;padding:8px 10px}
+.output{margin-top:10px;padding:10px;border-radius:8px;background:var(--glass);color:var(--text);border:1px solid var(--outline)}
+table{width:100%;border-collapse:collapse;font-size:0.92rem}
+th,td{padding:8px;border-bottom:1px dashed var(--outline);text-align:left}
+th{color:var(--muted);font-size:0.78rem;text-transform:uppercase}
+.crop-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.crop-item{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:10px;border-radius:10px;background:linear-gradient(180deg,var(--glass),transparent);border:1px solid var(--outline)}
+.crop-meta{display:flex;gap:10px;align-items:center}
+.crop-name{font-weight:700}
+.crop-phase{font-size:0.82rem;color:var(--muted)}
+.kv{font-weight:600;color:var(--muted);font-size:0.85rem;display:inline-block;margin-right:8px}
+.flex{display:flex;gap:8px;align-items:center}
+@media(min-width:900px){.container{grid-template-columns:1fr 460px;align-items:start}}
+.footer-note{font-size:0.82rem;color:var(--muted);margin-top:8px}
+.crop-item:hover{transform:translateY(-2px);transition:all .14s ease}
+select:focus,input:focus,textarea:focus,button:focus{outline:2px solid rgba(0,0,0,0.06);outline-offset:2px}
+.timeline{margin-top:8px;border-radius:8px;padding:8px;border:1px solid var(--outline);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+.timeline-entry{padding:8px;border-radius:8px;margin-bottom:6px;background:rgba(0,0,0,0.02)}
+.small-muted{font-size:0.85rem;color:var(--muted)}
+.input-file{display:none}
+.action-primary{border-left:4px solid var(--accent);padding-left:8px}
+.rule-list{margin-top:8px;padding:8px;border-radius:8px;border:1px dashed var(--outline);background:var(--glass)}
+.rule-item{padding:8px;border-radius:8px;margin-bottom:6px;background:transparent}
+.priority-badge{font-weight:700;padding:4px 8px;border-radius:999px;background:var(--accent);color:#fff;font-size:0.75rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <div class="logo">AD</div>
+    <div>
+      <h1>Asistente de Diagnóstico</h1>
+      <div class="subtitle">Export/Import · Reglas con prioridad · Timeline por cultivo</div>
+    </div>
+  </div>
+
+  <div class="flex">
+    <button id="toggleDark" class="btn ghost small">🌙 Dark</button>
+    <button id="btnExample" class="btn small">Ejemplo</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- MAIN -->
+  <div>
+
+    <!-- DIAGNOSTIC -->
+    <section class="card">
+      <h2>Diagnóstico Simplificado (priorizado)</h2>
+      <div class="row">
+        <div class="col">
+          <label for="faseSelect">Fase de cultivo</label>
+          <select id="faseSelect"></select>
+        </div>
+        <div class="col">
+          <label for="sintomaSelect">Síntoma visual</label>
+          <select id="sintomaSelect"></select>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <button id="btnDiagnosticar" class="btn">Diagnosticar Problema</button>
+        <button id="btnResetDiag" class="btn ghost small">Limpiar</button>
+      </div>
+      <div id="diagnosticoOutput" class="output" aria-live="polite">Selecciona fase y síntoma y pulsa "Diagnosticar Problema".</div>
+
+      <div class="rule-list" id="ruleList" style="display:none">
+        <div class="small-muted">Causas detectadas (ordenadas por prioridad — 1 = más probable):</div>
+        <div id="ruleItems"></div>
+      </div>
+      <div class="footer-note">La primera acción destacada es la recomendación primaria.</div>
+    </section>
+
+    <!-- VPD -->
+    <section class="card" style="margin-top:12px;">
+      <h2>Calculadora de VPD (kPa)</h2>
+      <div class="row">
+        <div class="col">
+          <label for="tempInput">Temperatura (°C)</label>
+          <input id="tempInput" type="number" step="0.1" placeholder="ej. 25">
+        </div>
+        <div class="col">
+          <label for="rhInput">Humedad Relativa (%RH)</label>
+          <input id="rhInput" type="number" step="0.1" placeholder="ej. 50">
+        </div>
+      </div>
+      <div class="row">
+        <button id="btnCalcularVPD" class="btn">Calcular VPD</button>
+        <button id="btnResetVPD" class="btn ghost small">Limpiar</button>
+      </div>
+      <div id="vpdOutput" class="output" aria-live="polite">Ingrese valores y pulse "Calcular VPD".</div>
+    </section>
+
+    <!-- CROP Registry + Timeline -->
+    <section class="card" style="margin-top:12px;">
+      <h2>Registro de Cultivos (v2) + Timeline</h2>
+      <form id="cropForm" onsubmit="return false;">
+        <div class="row">
+          <div class="col">
+            <label for="cropName">Nombre / Lote</label>
+            <input id="cropName" type="text" placeholder="Ej: Lote #1">
+          </div>
+          <div class="col">
+            <label for="cropStrain">Genética (opcional)</label>
+            <input id="cropStrain" type="text" placeholder="Ej: Blue Dream">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="startDate">Fecha inicio</label>
+            <input id="startDate" type="date">
+          </div>
+          <div class="col">
+            <label for="phaseSelectCrop">Fase actual</label>
+            <select id="phaseSelectCrop"><option>Vegetativo</option><option>Floración</option></select>
+          </div>
+        </div>
+        <label for="notes">Notas / Tareas</label>
+        <textarea id="notes" placeholder="Notas generales"></textarea>
+
+        <div class="row" style="margin-top:8px;">
+          <button id="btnAddCrop" class="btn">Agregar / Guardar cultivo</button>
+          <button id="btnClearForm" class="btn ghost small">Limpiar</button>
+        </div>
+      </form>
+
+      <div id="cropList" class="crop-list" aria-live="polite" style="margin-top:10px;"></div>
+
+      <div class="footer-note">Los cultivos y sus timelines se guardan en <strong>localStorage</strong>. Usa Export/Import para respaldos.</div>
+    </section>
+
+  </div>
+
+  <!-- SIDE -->
+  <aside class="card" style="min-width:260px;">
+    <h3>Protocolos & Tools</h3>
+
+    <div style="margin-top:8px;">
+      <div class="kv">Protocolos: Rangos ideales</div>
+      <table id="paramTable" style="margin-top:8px"></table>
+    </div>
+
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button id="btnCopyRanges" class="btn small">Copiar rangos</button>
+      <button id="btnViewAllRules" class="btn ghost small">Ver reglas</button>
+    </div>
+
+    <hr style="margin:12px 0;border:none;border-top:1px solid var(--outline)">
+
+    <div>
+      <div class="kv">Export / Import</div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button id="btnExport" class="btn small">Exportar JSON</button>
+        <label class="btn ghost small" for="fileImport">Importar JSON</label>
+        <input id="fileImport" class="input-file" type="file" accept="application/json">
+      </div>
+      <div style="margin-top:8px;">
+        <button id="btnClearAll" class="btn warn small">Borrar todos cultivos</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="kv">Funciones avanzadas (consola)</div>
+      <div class="small-muted">window.AD.export(), window.AD.import(json), window.AD.clearAll()</div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+/* =========================
+   DATA: rules (multi-cause with priority) and param ranges
+   ========================= */
+const DIAGNOSTIC_RULES = [
+  {
+    fase:"Vegetativo",
+    sintoma:"Hojas amarillas en la base (hojas viejas)",
+    causes: [
+      { priority:1, cause:"Deficiencia de Nitrógeno (N).", action:"Aumentar NPK para Vegetativo en 20% tras verificar EC." },
+      { priority:2, cause:"Bloqueo por pH bajo.", action:"Verificar pH y si está bajo, elevar a 5.8–6.2; corregir lentamente." }
+    ]
+  },
+  {
+    fase:"Floración",
+    sintoma:"Puntas de hojas quemadas o en forma de garra (Claw)",
+    causes: [
+      { priority:1, cause:"Exceso de nutrientes (Nutrient Burn).", action:"Lavar raíces con agua pH balanceada; reducir EC 25%." }
+    ]
+  },
+  {
+    fase:"Floración",
+    sintoma:"Manchas marrones secas en hojas medias/altas",
+    causes: [
+      { priority:1, cause:"Deficiencia de Calcio (Ca) o Magnesio (Mg).", action:"Aplicar CalMag al 50% de dosis; monitorizar." },
+      { priority:2, cause:"VPD alto o fluctuaciones de humedad.", action:"Revisar VPD y ventilación; estabilizar VPD." }
+    ]
+  },
+  {
+    fase:"Vegetativo",
+    sintoma:"Hojas caídas y sustrato húmedo constantemente",
+    causes:[
+      { priority:1, cause:"Exceso de riego.", action:"Dejar secar sustrato, mejorar drenaje y oxigenación." }
+    ]
+  },
+  {
+    fase:"Floración",
+    sintoma:"Hojas superiores blanqueadas",
+    causes:[
+      { priority:1, cause:"Estrés lumínico por intensidad excesiva.", action:"Elevar la lámpara 20–30 cm o bajar intensidad al 75%." }
+    ]
+  }
+];
+
+const PARAM_RANGES = {
+  Vegetativo: { Temperatura:"22–26°C", Humedad:"55–70%", VPD:"0.8–1.2 kPa", pH:"5.8–6.2" },
+  Floración:  { Temperatura:"20–26°C", Humedad:"40–55%", VPD:"1.0–1.5 kPa", pH:"5.8–6.2" }
+};
+
+/* =========================
+   UI references
+   ========================= */
+const faseSelect = document.getElementById('faseSelect');
+const sintomaSelect = document.getElementById('sintomaSelect');
+const btnDiagnosticar = document.getElementById('btnDiagnosticar');
+const btnResetDiag = document.getElementById('btnResetDiag');
+const diagnosticoOutput = document.getElementById('diagnosticoOutput');
+const ruleList = document.getElementById('ruleList');
+const ruleItems = document.getElementById('ruleItems');
+
+const tempInput = document.getElementById('tempInput');
+const rhInput = document.getElementById('rhInput');
+const btnCalcularVPD = document.getElementById('btnCalcularVPD');
+const btnResetVPD = document.getElementById('btnResetVPD');
+const vpdOutput = document.getElementById('vpdOutput');
+
+const paramTable = document.getElementById('paramTable');
+const btnCopyRanges = document.getElementById('btnCopyRanges');
+const btnViewAllRules = document.getElementById('btnViewAllRules');
+
+const cropForm = document.getElementById('cropForm');
+const cropName = document.getElementById('cropName');
+const cropStrain = document.getElementById('cropStrain');
+const startDate = document.getElementById('startDate');
+const phaseSelectCrop = document.getElementById('phaseSelectCrop');
+const notes = document.getElementById('notes');
+const btnAddCrop = document.getElementById('btnAddCrop');
+const btnClearForm = document.getElementById('btnClearForm');
+const cropList = document.getElementById('cropList');
+
+const toggleDark = document.getElementById('toggleDark');
+const btnExample = document.getElementById('btnExample');
+
+const btnExport = document.getElementById('btnExport');
+const fileImport = document.getElementById('fileImport');
+const btnClearAll = document.getElementById('btnClearAll');
+
+/* =========================
+   localStorage keys and helpers
+   ========================= */
+const LS_KEY = 'ad_crops_v3';
+const LS_THEME = 'ad_dark_v3';
+
+function uid(){ return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function loadCrops(){ try{ const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){return []} }
+function saveCrops(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+
+/* =========================
+   INIT UI: populate selects, params, theme, crops
+   ========================= */
+function init(){
+  const fases = [...new Set(DIAGNOSTIC_RULES.map(r => r.fase))];
+  faseSelect.innerHTML = '';
+  fases.forEach(f => { const o=document.createElement('option'); o.value=f; o.textContent=f; faseSelect.appendChild(o); });
+  populateSymptoms(faseSelect.value || fases[0]);
+  renderParamTable();
+  renderCropList();
+  const dark = localStorage.getItem(LS_THEME) === '1';
+  if(dark) document.documentElement.classList.add('dark');
+  updateDarkButton();
+}
+function populateSymptoms(fase){
+  const filtered = DIAGNOSTIC_RULES.filter(r=>r.fase===fase).map(r=>r.sintoma);
+  sintomaSelect.innerHTML = '';
+  filtered.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sintomaSelect.appendChild(o);});
+}
+faseSelect.addEventListener('change', e=>populateSymptoms(e.target.value));
+
+function renderParamTable(){
+  paramTable.innerHTML = `<tr><th>Fase</th><th>Temperatura</th><th>Humedad</th><th>VPD</th><th>pH</th></tr>`;
+  for(const f in PARAM_RANGES){
+    const p = PARAM_RANGES[f];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${f}</td><td>${p.Temperatura}</td><td>${p.Humedad}</td><td>${p.VPD}</td><td>${p.pH}</td>`;
+    paramTable.appendChild(tr);
+  }
+}
+
+/* =========================
+   DIAGNOSTIC: find rule and show prioritized causes
+   ========================= */
+btnDiagnosticar.addEventListener('click', ()=>{
+  const fase = faseSelect.value; const sintoma = sintomaSelect.value;
+  const rule = DIAGNOSTIC_RULES.find(r=>r.fase===fase && r.sintoma===sintoma);
+  if(!rule){ diagnosticoOutput.innerHTML = `<strong>No hay coincidencia exacta.</strong> Revisa pH/EC y VPD.`; ruleList.style.display='none'; return; }
+  // sort causes by priority ascending (1 = highest)
+  const causes = [...rule.causes].sort((a,b)=>a.priority - b.priority);
+  // primary = highest priority (lowest number)
+  const primary = causes[0];
+  diagnosticoOutput.innerHTML = `<div class="action-primary"><strong>Acción primaria (recomendada):</strong> ${primary.action}</div><div style="margin-top:8px;"><strong>Contexto:</strong> ${primary.cause}</div>`;
+  // render list
+  ruleItems.innerHTML = '';
+  causes.forEach(c=>{
+    const div = document.createElement('div'); div.className='rule-item';
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Prioridad ${c.priority}</strong> — ${c.cause}</div><div><span class="priority-badge">#${c.priority}</span></div></div><div style="margin-top:6px;color:var(--muted)">${c.action}</div>`;
+    ruleItems.appendChild(div);
+  });
+  ruleList.style.display='block';
+});
+btnResetDiag.addEventListener('click', ()=>{ faseSelect.selectedIndex=0; populateSymptoms(faseSelect.value); diagnosticoOutput.textContent='Selecciona fase y síntoma y pulsa "Diagnosticar Problema".'; ruleList.style.display='none'; });
+
+/* =========================
+   VPD CALC
+   ========================= */
+function calcularVPD(tempC, rh){
+  const es = 0.6108 * Math.exp((17.27 * tempC) / (tempC + 237.3));
+  const ea = es * (rh/100);
+  return es - ea;
+}
+btnCalcularVPD.addEventListener('click', ()=>{
+  const t=parseFloat(tempInput.value), rh=parseFloat(rhInput.value);
+  if(Number.isNaN(t)||Number.isNaN(rh)){ vpdOutput.textContent='Introduce temperatura y RH válidas.'; return; }
+  const vpd=calcularVPD(t,rh); const vpdF=vpd.toFixed(2);
+  let evalMsg='';
+  if(vpd>=0.8 && vpd<=1.5) evalMsg='VPD Óptimo para Floración.';
+  else if(vpd<0.8) evalMsg='VPD bajo: riesgo de moho. Aumenta ventilación.';
+  else evalMsg='VPD alto: riesgo de deshidratación. Aumenta humedad.';
+  vpdOutput.innerHTML=`<strong>VPD:</strong> ${vpdF} kPa — ${evalMsg}`;
+});
+btnResetVPD.addEventListener('click', ()=>{ tempInput.value=''; rhInput.value=''; vpdOutput.textContent='Ingrese valores y pulse "Calcular VPD".'; });
+
+/* =========================
+   CROP registry + timeline
+   ========================= */
+let editId = null;
+
+btnAddCrop.addEventListener('click', ()=>{
+  const name = cropName.value.trim(); if(!name){ alert('Introduce un nombre de cultivo.'); return; }
+  const strain = cropStrain.value.trim(); const sd = startDate.value || ''; const phase = phaseSelectCrop.value; const note = notes.value.trim();
+  const arr = loadCrops();
+  if(editId){
+    const idx = arr.findIndex(x=>x.id===editId);
+    if(idx>=0){
+      arr[idx] = { ...arr[idx], name, strain, startDate:sd, phase, notes:note, updatedAt: Date.now() };
+      saveCrops(arr); resetCropForm(); renderCropList(); alert('Cultivo actualizado.');
+      return;
+    } else { editId = null; }
+  }
+  const item = { id: uid(), name, strain, startDate:sd, phase, notes:note, createdAt: Date.now(), entries: [] };
+  arr.unshift(item); saveCrops(arr); resetCropForm(); renderCropList();
+});
+
+btnClearForm.addEventListener('click', resetCropForm);
+function resetCropForm(){ editId=null; cropName.value=''; cropStrain.value=''; startDate.value=''; phaseSelectCrop.value='Vegetativo'; notes.value=''; btnAddCrop.textContent='Agregar / Guardar cultivo'; }
+
+/* RENDER crop list with timeline expand/edit/delete and add timeline entry */
+function renderCropList(){
+  const arr = loadCrops(); cropList.innerHTML='';
+  if(arr.length===0){ cropList.innerHTML=`<div class="small-muted">No hay cultivos registrados.</div>`; return; }
+  arr.forEach(item=>{
+    const div = document.createElement('div'); div.className='crop-item';
+    // main meta
+    const left = document.createElement('div'); left.style.minWidth='0';
+    left.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div class="crop-name">${escapeHtml(item.name)}</div><div class="crop-phase small-muted">${escapeHtml(item.strain||'')} · <strong>${escapeHtml(item.phase)}</strong> · ${item.startDate||'—'}</div></div>
+        </div>
+        <div style="margin-top:8px;color:var(--muted)">${escapeHtml(item.notes||'')}</div>`;
+    // right actions
+    const right = document.createElement('div'); right.style.display='flex'; right.style.flexDirection='column'; right.style.gap='8px'; right.style.alignItems='flex-end';
+    const btns = document.createElement('div'); btns.style.display='flex'; btns.style.gap='6px';
+    const editBtn = document.createElement('button'); editBtn.className='btn ghost small'; editBtn.textContent='Editar'; editBtn.dataset.id=item.id;
+    const timelineBtn = document.createElement('button'); timelineBtn.className='btn small'; timelineBtn.textContent='Timeline'; timelineBtn.dataset.id=item.id;
+    const delBtn = document.createElement('button'); delBtn.className='btn warn small'; delBtn.textContent='Borrar'; delBtn.dataset.id=item.id;
+    btns.appendChild(editBtn); btns.appendChild(timelineBtn); btns.appendChild(delBtn);
+    right.appendChild(btns);
+    right.innerHTML += `<div class="small-muted">Creado: ${new Date(item.createdAt).toLocaleString()}</div>`;
+    // append
+    div.appendChild(left); div.appendChild(right);
+    cropList.appendChild(div);
+
+    // handlers
+    editBtn.addEventListener('click', ()=>{ editId=item.id; cropName.value=item.name; cropStrain.value=item.strain||''; startDate.value=item.startDate||''; phaseSelectCrop.value=item.phase||'Vegetativo'; notes.value=item.notes||''; btnAddCrop.textContent='Guardar cambios'; window.scrollTo({top:0,behavior:'smooth'}); });
+    delBtn.addEventListener('click', ()=>{ if(confirm('Borrar este cultivo?')){ const newArr = loadCrops().filter(x=>x.id!==item.id); saveCrops(newArr); renderCropList(); } });
+
+    // timeline panel (hidden, toggled)
+    const timeline = document.createElement('div'); timeline.className='timeline'; timeline.style.display='none';
+    timeline.innerHTML = `<div style="display:flex;gap:8px;"><div style="flex:1"><strong>Timeline</strong></div><div><button class="btn ghost small" data-action="close">Cerrar</button></div></div>
+      <div style="margin-top:8px;">
+        <form data-cropid="${item.id}" class="timeline-form" onsubmit="return false;">
+          <div class="row">
+            <div class="col"><label>Fecha</label><input type="date" name="tdate" required></div>
+            <div class="col"><label>Tipo</label>
+              <select name="ttype"><option>Riego</option><option>EC</option><option>pH</option><option>Nota</option><option>Acción</option></select></div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <div class="col"><label>Valor (opcional)</label><input name="tvalue" type="text" placeholder="ej: EC 1.6"></div>
+          </div>
+          <label>Notas</label><textarea name="tnote" placeholder="Descripción breve"></textarea>
+          <div class="row" style="margin-top:8px;">
+            <button class="btn small" data-action="addEntry">Agregar entrada</button>
+            <button class="btn ghost small" data-action="clearForm">Limpiar</button>
+          </div>
+        </form>
+      </div>
+      <div class="timeline-entries" style="margin-top:8px"></div>
+    `;
+    // attach timeline under div (full width)
+    const wrapper = document.createElement('div'); wrapper.style.gridColumn='1 / -1'; wrapper.appendChild(timeline);
+    cropList.appendChild(wrapper);
+
+    timelineBtn.addEventListener('click', ()=>{
+      const isOpen = timeline.style.display !== 'none';
+      // close any other open timelines
+      document.querySelectorAll('.timeline').forEach(t=>t.style.display='none');
+      if(!isOpen){ populateTimeline(item.id); timeline.style.display='block'; timeline.scrollIntoView({behavior:'smooth'}); }
+      else timeline.style.display='none';
+    });
+
+    // timeline form handlers using delegation
+    const tform = timeline.querySelector('.timeline-form');
+    tform.addEventListener('click', e=>{
+      const act = e.target.getAttribute('data-action');
+      if(!act) return;
+      if(act==='clearForm'){ tform.reset(); }
+      if(act==='addEntry'){
+        const cid = tform.getAttribute('data-cropid');
+        const formData = new FormData(tform);
+        const tdate = formData.get('tdate');
+        const ttype = formData.get('ttype');
+        const tvalue = formData.get('tvalue');
+        const tnote = formData.get('tnote');
+        if(!tdate){ alert('Fecha requerida'); return; }
+        addTimelineEntry(cid, { id: uid(), date: tdate, type: ttype, value: tvalue, note: tnote, createdAt: Date.now() });
+        tform.reset(); populateTimeline(cid);
+      }
+    });
+
+    // close button
+    timeline.querySelector('button[data-action="close"]').addEventListener('click', ()=>{ timeline.style.display='none'; });
+
+  });
+}
+
+/* add timeline entry to crop */
+function addTimelineEntry(cropId, entry){
+  const arr = loadCrops();
+  const idx = arr.findIndex(x=>x.id===cropId);
+  if(idx<0) return;
+  arr[idx].entries = arr[idx].entries || [];
+  arr[idx].entries.unshift(entry); // newest first
+  arr[idx].updatedAt = Date.now();
+  saveCrops(arr);
+}
+
+/* populate timeline entries UI */
+function populateTimeline(cropId){
+  const container = Array.from(document.querySelectorAll('.timeline')).find(t=> t.querySelector('.timeline-form')?.getAttribute('data-cropid')===cropId);
+  if(!container) return;
+  const entriesWrap = container.querySelector('.timeline-entries');
+  entriesWrap.innerHTML = '';
+  const arr = loadCrops(); const crop = arr.find(x=>x.id===cropId);
+  if(!crop) return;
+  const entries = (crop.entries || []);
+  if(entries.length===0){ entriesWrap.innerHTML = `<div class="small-muted">Sin entradas en el timeline.</div>`; return; }
+  entries.forEach(en=>{
+    const d = document.createElement('div'); d.className='timeline-entry';
+    d.innerHTML = `<div style="display:flex;justify-content:space-between;gap:8px"><div><strong>${escapeHtml(en.type)}</strong> · ${escapeHtml(en.date)} ${en.value? ' · '+escapeHtml(en.value):''}</div>
+      <div style="display:flex;gap:6px"><button class="btn ghost small" data-action="deleteEntry" data-id="${en.id}">Eliminar</button></div></div>
+      <div style="margin-top:6px;color:var(--muted)">${escapeHtml(en.note||'')}</div><div class="small-muted" style="margin-top:6px;">Registrado: ${new Date(en.createdAt).toLocaleString()}</div>`;
+    entriesWrap.appendChild(d);
+    // delete entry
+    d.querySelector('button[data-action="deleteEntry"]').addEventListener('click', ()=>{
+      if(!confirm('Eliminar esta entrada del timeline?')) return;
+      const arr2 = loadCrops(); const idx = arr2.findIndex(x=>x.id===cropId);
+      if(idx<0) return;
+      arr2[idx].entries = (arr2[idx].entries || []).filter(e=>e.id!==en.id);
+      saveCrops(arr2); populateTimeline(cropId);
+    });
+  });
+}
+
+/* utility escape */
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* =========================
+   EXPORT / IMPORT (file)
+   ========================= */
+btnExport.addEventListener('click', ()=>{
+  const data = { crops: loadCrops(), exportedAt: new Date().toISOString(), version: 'ad_v3' };
+  const blob = new Blob([JSON.stringify(data,null,2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob); const a = document.createElement('a');
+  a.href = url; a.download = `ad_crops_export_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+fileImport.addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  if(!confirm('Importar este archivo JSON sobrescribirá los cultivos actuales. ¿Continuar?')){ e.target.value=''; return; }
+  try{
+    const txt = await f.text(); const parsed = JSON.parse(txt);
+    if(parsed && parsed.crops) saveCrops(parsed.crops); else if(Array.isArray(parsed)) saveCrops(parsed); else throw new Error('Formato no reconocido');
+    renderCropList(); alert('Importación completada.'); e.target.value='';
+  }catch(err){ alert('Error importando JSON: '+err.message); e.target.value=''; }
+});
+
+/* clear all crops */
+btnClearAll.addEventListener('click', ()=>{ if(confirm('Borrar TODOS los cultivos y timelines?')){ localStorage.removeItem(LS_KEY); renderCropList(); alert('Datos borrados.'); } });
+
+/* =========================
+   VIEW RULES and helpers
+   ========================= */
+btnViewAllRules.addEventListener('click', ()=>{
+  const formatted = DIAGNOSTIC_RULES.map(r=>{
+    const cs = r.causes.slice().sort((a,b)=>a.priority-b.priority).map(c=>`  [P${c.priority}] ${c.cause}\n    Acción: ${c.action}`).join('\n');
+    return `${r.fase} — ${r.sintoma}\n${cs}`;
+  }).join('\n\n');
+  const w = window.open('','_blank','noopener');
+  w.document.write(`<pre style="white-space:pre-wrap;font-family:monospace;padding:12px;">${escapeHtml(formatted)}</pre>`);
+});
+
+/* copy ranges */
+btnCopyRanges.addEventListener('click', async ()=>{
+  const text = Object.entries(PARAM_RANGES).map(([f,p])=>`${f}: Temp ${p.Temperatura}, Hum ${p.Humedad}, VPD ${p.VPD}, pH ${p.pH}`).join('\n');
+  try{ await navigator.clipboard.writeText(text); alert('Rangos copiados.'); }catch(e){ prompt('Copia manual:', text); }
+});
+
+/* =========================
+   DARK mode
+   ========================= */
+function updateDarkButton(){ const isDark = document.documentElement.classList.contains('dark'); toggleDark.textContent = isDark ? '☀️ Light' : '🌙 Dark'; }
+toggleDark.addEventListener('click', ()=>{ document.documentElement.classList.toggle('dark'); localStorage.setItem(LS_THEME, document.documentElement.classList.contains('dark') ? '1' : '0'); updateDarkButton(); });
+
+/* =========================
+   EXAMPLE loader
+   ========================= */
+btnExample.addEventListener('click', ()=>{
+  faseSelect.value='Floración'; populateSymptoms('Floración'); sintomaSelect.value='Puntas de hojas quemadas o en forma de garra (Claw)';
+  diagnosticoOutput.textContent='Ejemplo cargado. Pulsa "Diagnosticar Problema".';
+  tempInput.value=25; rhInput.value=50;
+  vpdOutput.textContent='Valores muestra T=25°C RH=50%';
+  const arr = loadCrops();
+  if(arr.length===0){
+    const sample = [
+      { id: uid(), name:'Lote A - Chemdawg', strain:'Chemdawg', startDate: new Date(Date.now()-12*24*60*60*1000).toISOString().slice(0,10), phase:'Vegetativo', notes:'Trasplante hace 5 días', createdAt:Date.now()-1000000, entries:[
+        { id: uid(), date: new Date(Date.now()-8*24*60*60*1000).toISOString().slice(0,10), type:'Riego', value:'500ml', note:'Riego ligero', createdAt: Date.now()-800000 },
+        { id: uid(), date: new Date(Date.now()-4*24*60*60*1000).toISOString().slice(0,10), type:'EC', value:'1.2', note:'Lectura EC', createdAt: Date.now()-400000 }
+      ]},
+      { id: uid(), name:'Lote B - Blue', strain:'Blue Dream', startDate: new Date(Date.now()-40*24*60*60*1000).toISOString().slice(0,10), phase:'Floración', notes:'Reducir EC esta semana', createdAt:Date.now()-500000, entries:[
+        { id: uid(), date: new Date(Date.now()-2*24*60*60*1000).toISOString().slice(0,10), type:'Acción', value:'Reducir EC 25%', note:'Lavar raíces', createdAt: Date.now()-200000 }
+      ]}
+    ];
+    saveCrops(sample); renderCropList(); alert('Cultivos de ejemplo añadidos.');
+  } else { alert('Ejemplo cargado (no se sobrescribieron cultivos existentes).'); }
+});
+
+/* =========================
+   Console helpers
+   ========================= */
+window.AD = {
+  export: ()=> JSON.stringify({ crops: loadCrops(), exportedAt: new Date().toISOString(), version:'ad_v3' }, null, 2),
+  import: (json)=>{ try{ const parsed = typeof json==='string'? JSON.parse(json): json; if(parsed && parsed.crops) saveCrops(parsed.crops); else if(Array.isArray(parsed)) saveCrops(parsed); else throw new Error('Formato no reconocido'); renderCropList(); return true; }catch(e){ console.error(e); return false; } },
+  clearAll: ()=>{ if(confirm('Borrar TODOS los cultivos?')){ localStorage.removeItem(LS_KEY); renderCropList(); } }
+};
+
+/* final init */
+init();
+</script>
+
+</body>
+</html>
