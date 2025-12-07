@@ -21,11 +21,13 @@ public class ReportService {
 
     private final BatchLogRepository batchLogRepository;
 
+    private final PermissionService permissionService;
+
     @Transactional
     public Report generateReport(User user, ReportType type, LocalDateTime startDate, LocalDateTime endDate) {
-        // Verificar que el usuario sea PRO
-        if (user.getRole() != Role.PRO) {
-            throw new RuntimeException("Solo usuarios PRO pueden generar reportes");
+        // Verificar permisos para generar reportes
+        if (!permissionService.canGenerateReports(user)) {
+            throw new RuntimeException("No tiene permisos para generar reportes");
         }
 
         Report report = Report.builder()

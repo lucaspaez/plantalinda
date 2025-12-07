@@ -27,8 +27,10 @@ export default function LoginPage() {
             const { token } = response.data;
             localStorage.setItem("token", token);
             router.push("/dashboard");
-        } catch (err) {
-            setError("Credenciales inválidas. Por favor intenta de nuevo.");
+        } catch (err: any) {
+            // Extraer mensaje del backend si existe
+            const backendMessage = err?.response?.data?.message;
+            setError(backendMessage || "Credenciales inválidas. Por favor intenta de nuevo.");
         } finally {
             setLoading(false);
         }

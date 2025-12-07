@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
 import api from '@/services/api';
+import { getUserRoleAndPlan, hasPermission, Role, RolePermissions } from '@/utils/permissions';
 import {
     Leaf,
     Package,
@@ -41,7 +42,22 @@ export default function DashboardPage() {
         recentActivity: []
     });
     const [loading, setLoading] = useState(true);
-    const [userRole, setUserRole] = useState<string>('FREE');
+    const [userPlan, setUserPlan] = useState<string>('FREE');
+    const [userRole, setUserRole] = useState<Role>('VIEWER');
+
+    // Helper para verificar si una acción está disponible según plan Y rol
+    const isActionAvailable = (isPro: boolean, requiredPermission?: keyof RolePermissions): boolean => {
+        // Si es PRO, verificar plan
+        if (isPro) {
+            const hasPlan = userPlan === 'PRO' || userPlan === 'ENTERPRISE';
+            if (!hasPlan) return false;
+        }
+        // Si requiere permiso específico, verificar rol
+        if (requiredPermission) {
+            return hasPermission(userRole, requiredPermission);
+        }
+        return true;
+    };
 
     useEffect(() => {
         fetchDashboardData();
@@ -64,9 +80,8 @@ export default function DashboardPage() {
                 activeBatches = batchesRes.data.filter((b: any) =>
                     b.currentStage !== 'HARVEST' && b.currentStage !== 'CURING'
                 ).length;
-                setUserRole('PRO');
             } catch (err) {
-                // User is FREE
+                // User is FREE or error
             }
 
             try {
@@ -96,6 +111,11 @@ export default function DashboardPage() {
         } finally {
             setLoading(false);
         }
+
+        // Get plan and role from JWT
+        const { role, plan } = getUserRoleAndPlan();
+        setUserPlan(plan);
+        setUserRole(role);
     };
 
     const quickActions = [
@@ -105,7 +125,7 @@ export default function DashboardPage() {
             icon: Leaf,
             color: 'from-green-500 to-emerald-600',
             href: '/diagnosis',
-            available: true
+            available: isActionAvailable(false, 'canCreateDiagnosis')
         },
         {
             title: 'Calculadora VPD',
@@ -121,7 +141,7 @@ export default function DashboardPage() {
             icon: BookOpen,
             color: 'from-purple-500 to-pink-600',
             href: '/batches/new',
-            available: userRole === 'PRO',
+            available: isActionAvailable(true, 'canManageBatches'),
             pro: true
         },
         {
@@ -130,7 +150,7 @@ export default function DashboardPage() {
             icon: Package,
             color: 'from-orange-500 to-red-600',
             href: '/inventory/new',
-            available: userRole === 'PRO',
+            available: isActionAvailable(true, 'canManageInventory'),
             pro: true
         }
     ];
@@ -152,7 +172,7 @@ export default function DashboardPage() {
             color: 'text-purple-600 dark:text-purple-400',
             bgColor: 'bg-purple-100 dark:bg-purple-900/20',
             change: '+5%',
-            available: userRole === 'PRO',
+            available: userPlan === 'PRO' || userPlan === 'ENTERPRISE',
             pro: true
         },
         {
@@ -162,7 +182,7 @@ export default function DashboardPage() {
             color: 'text-blue-600 dark:text-blue-400',
             bgColor: 'bg-blue-100 dark:bg-blue-900/20',
             change: '+8%',
-            available: userRole === 'PRO',
+            available: userPlan === 'PRO' || userPlan === 'ENTERPRISE',
             pro: true
         },
         {
@@ -172,7 +192,7 @@ export default function DashboardPage() {
             color: 'text-orange-600 dark:text-orange-400',
             bgColor: 'bg-orange-100 dark:bg-orange-900/20',
             change: stats.lowStockItems > 0 ? 'Requiere atención' : 'Todo bien',
-            available: userRole === 'PRO',
+            available: userPlan === 'PRO' || userPlan === 'ENTERPRISE',
             pro: true
         }
     ];
@@ -198,7 +218,7 @@ export default function DashboardPage() {
                     <p className="text-green-100">
                         Gestiona tu cultivo de cannabis medicinal de forma profesional
                     </p>
-                    {userRole === 'FREE' && (
+                    {userPlan === 'FREE' && (
                         <button
                             onClick={() => router.push('/upgrade')}
                             className="mt-4 bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-green-50 transition-colors"
@@ -274,14 +294,20 @@ export default function DashboardPage() {
                         {quickActions.map((action, index) => (
                             <button
                                 key={index}
-                                onClick={() => action.available && router.push(action.href)}
-                                disabled={!action.available}
-                                className={`
-                                    relative p-6 rounded-xl text-left transition-all
-                                    ${action.available
-                                        ? 'bg-white dark:bg-gray-800 hover:shadow-lg cursor-pointer border border-gray-200 dark:border-gray-700'
-                                        : 'bg-gray-100 dark:bg-gray-800/50 cursor-not-allowed border border-gray-200 dark:border-gray-700'
+                                onClick={() => {
+                                    // Si no está disponible y es PRO que usuario FREE no tiene, ir a upgrade
+                                    if (!action.available && action.pro && userPlan === 'FREE') {
+                                        router.push('/upgrade');
+                                    } else if (!action.available) {
+                                        // Si no está disponible por permisos de rol, navegar igual (RoleGuard bloqueará)
+                                        router.push(action.href);
+                                    } else {
+                                        router.push(action.href);
                                     }
+                                }}
+                                className={`
+                                    relative p-6 rounded-xl text-left transition-all cursor-pointer
+                                    bg-white dark:bg-gray-800 hover:shadow-lg border border-gray-200 dark:border-gray-700
                                 `}
                             >
                                 <div className={`

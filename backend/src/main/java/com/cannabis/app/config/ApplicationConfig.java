@@ -21,7 +21,10 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
+        // Usar findByEmailWithOrganization para cargar la organización eagerly
+        // Esto evita LazyInitializationException en
+        // PermissionService.canAccessProFeatures()
+        return username -> repository.findByEmailWithOrganization(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 

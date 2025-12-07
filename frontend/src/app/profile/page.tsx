@@ -9,7 +9,8 @@ export default function ProfilePage() {
     const router = useRouter();
     const [userData, setUserData] = useState({
         email: '',
-        role: 'FREE',
+        role: 'OWNER',
+        plan: 'FREE',
         firstname: '',
         lastname: '',
         createdAt: null as Date | null
@@ -25,7 +26,8 @@ export default function ProfilePage() {
 
                 setUserData({
                     email: payload.sub || 'usuario@ejemplo.com',
-                    role: role.replace('ROLE_', ''),
+                    role: (payload.role || 'OWNER').replace('ROLE_', ''),
+                    plan: payload.plan || 'FREE',
                     firstname: payload.firstname || '',
                     lastname: payload.lastname || '',
                     createdAt: payload.iat ? new Date(payload.iat * 1000) : null
@@ -83,14 +85,14 @@ export default function ProfilePage() {
                                 </p>
                             </div>
                             <div className="sm:mb-4">
-                                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-lg ${userData.role === 'PRO'
-                                        ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-lg ${userData.plan === 'PRO' || userData.plan === 'ENTERPRISE'
+                                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                                     }`}>
-                                    {userData.role === 'PRO' ? (
+                                    {userData.plan === 'PRO' || userData.plan === 'ENTERPRISE' ? (
                                         <>
                                             <Award size={20} />
-                                            PRO
+                                            {userData.plan}
                                         </>
                                     ) : (
                                         <>
@@ -137,7 +139,7 @@ export default function ProfilePage() {
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Tipo de cuenta</h3>
                         </div>
                         <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {userData.role}
+                            {userData.plan}
                         </p>
                     </div>
                 </div>
@@ -200,7 +202,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Plan Features */}
-                {userData.role === 'FREE' && (
+                {(userData.plan === 'FREE') && (
                     <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg shadow-lg p-6 border-2 border-purple-200 dark:border-purple-700">
                         <div className="flex items-start justify-between mb-4">
                             <div>
@@ -242,7 +244,7 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                {userData.role === 'PRO' && (
+                {(userData.plan === 'PRO' || userData.plan === 'ENTERPRISE') && (
                     <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg shadow-lg p-6 border-2 border-purple-200 dark:border-purple-700">
                         <div className="flex items-center gap-3 mb-4">
                             <Award className="w-8 h-8 text-purple-600 dark:text-purple-400" />

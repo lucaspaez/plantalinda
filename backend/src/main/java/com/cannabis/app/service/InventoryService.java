@@ -49,6 +49,7 @@ public class InventoryService {
                 .unitCost(request.getUnitCost())
                 .location(request.getLocation())
                 .user(user)
+                .organization(user.getOrganization()) // Multi-tenancy: Set organization
                 .build();
 
         item = inventoryItemRepository.save(item);
@@ -62,25 +63,36 @@ public class InventoryService {
         return mapToDto(item);
     }
 
+    /**
+     * Get all inventory items for the user's organization.
+     * Multi-tenancy: Returns items visible to all users in the same organization.
+     */
     public List<InventoryItemResponse> getUserInventory(User user) {
-        return inventoryItemRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
+        if (user.getOrganization() == null) {
+            return List.of();
+        }
+        return inventoryItemRepository.findByOrganizationIdOrderByCreatedAtDesc(user.getOrganization().getId())
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
     public List<InventoryItemResponse> getInventoryByType(User user, InventoryItemType type) {
-        return inventoryItemRepository.findByUserIdAndType(user.getId(), type)
+        if (user.getOrganization() == null) {
+            return List.of();
+        }
+        return inventoryItemRepository.findByOrganizationIdAndType(user.getOrganization().getId(), type)
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
     public List<InventoryItemResponse> getLowStockItems(User user) {
-        return inventoryItemRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
+        if (user.getOrganization() == null) {
+            return List.of();
+        }
+        return inventoryItemRepository.findLowStockItemsByOrganization(user.getOrganization().getId())
                 .stream()
-                .filter(item -> item.getMinimumQuantity() != null &&
-                        item.getCurrentQuantity() < item.getMinimumQuantity())
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
@@ -89,7 +101,10 @@ public class InventoryService {
         InventoryItem item = inventoryItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
 
-        if (!item.getUser().getId().equals(user.getId())) {
+        // Multi-tenancy: Check organization access, not just user
+        if (user.getOrganization() == null ||
+                item.getOrganization() == null ||
+                !item.getOrganization().getId().equals(user.getOrganization().getId())) {
             throw new RuntimeException("Unauthorized access to item");
         }
 
@@ -101,7 +116,10 @@ public class InventoryService {
         InventoryItem item = inventoryItemRepository.findById(request.getInventoryItemId())
                 .orElseThrow(() -> new RuntimeException("Item not found"));
 
-        if (!item.getUser().getId().equals(user.getId())) {
+        // Multi-tenancy: Check organization access
+        if (user.getOrganization() == null ||
+                item.getOrganization() == null ||
+                !item.getOrganization().getId().equals(user.getOrganization().getId())) {
             throw new RuntimeException("Unauthorized access to item");
         }
 
@@ -143,7 +161,10 @@ public class InventoryService {
         InventoryItem item = inventoryItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
 
-        if (!item.getUser().getId().equals(user.getId())) {
+        // Multi-tenancy: Check organization access
+        if (user.getOrganization() == null ||
+                item.getOrganization() == null ||
+                !item.getOrganization().getId().equals(user.getOrganization().getId())) {
             throw new RuntimeException("Unauthorized access to item");
         }
 
@@ -165,7 +186,10 @@ public class InventoryService {
         InventoryItem item = inventoryItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
 
-        if (!item.getUser().getId().equals(user.getId())) {
+        // Multi-tenancy: Check organization access
+        if (user.getOrganization() == null ||
+                item.getOrganization() == null ||
+                !item.getOrganization().getId().equals(user.getOrganization().getId())) {
             throw new RuntimeException("Unauthorized access to item");
         }
 

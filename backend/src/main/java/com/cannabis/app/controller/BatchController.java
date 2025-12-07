@@ -20,16 +20,24 @@ import java.util.List;
 public class BatchController {
 
     private final BatchService batchService;
+    private final com.cannabis.app.service.PermissionService permissionService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<BatchResponse> createBatch(
             @RequestBody CreateBatchRequest request,
             @AuthenticationPrincipal User user) {
 
-        // Verify user is PRO or ADMIN
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "create batch");
+
+        if (!permissionService.canCreateBatches(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // Check plan limits
+        long currentBatches = batchService.countUserBatches(user);
+        if (!permissionService.canAddBatch(user, currentBatches)) {
+            throw new IllegalStateException(
+                    "Has alcanzado el límite de lotes de tu plan. Actualiza a PRO para lotes ilimitados.");
         }
 
         BatchResponse response = batchService.createBatch(request, user);
@@ -37,38 +45,29 @@ public class BatchController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<List<BatchResponse>> getUserBatches(@AuthenticationPrincipal User user) {
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+        permissionService.requirePermission(user, "view batches");
         List<BatchResponse> batches = batchService.getUserBatches(user);
         return ResponseEntity.ok(batches);
     }
 
     @GetMapping("/{batchId}")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<BatchResponse> getBatch(
             @PathVariable Long batchId,
             @AuthenticationPrincipal User user) {
-
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+        permissionService.requirePermission(user, "view batch");
         BatchResponse response = batchService.getBatchById(batchId, user);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{batchId}/stage")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<BatchResponse> updateStage(
             @PathVariable Long batchId,
             @RequestParam BatchStage stage,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "update batch");
+        if (!permissionService.canUpdateBatches(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -77,12 +76,12 @@ public class BatchController {
     }
 
     @DeleteMapping("/{batchId}")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteBatch(
             @PathVariable Long batchId,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "delete batch");
+        if (!permissionService.canDeleteBatches(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -91,12 +90,12 @@ public class BatchController {
     }
 
     @PostMapping("/logs")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<BatchLogResponse> createLog(
             @RequestBody CreateBatchLogRequest request,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "create log");
+        if (!permissionService.canCreateBatchLogs(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -105,15 +104,11 @@ public class BatchController {
     }
 
     @GetMapping("/{batchId}/logs")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<List<BatchLogResponse>> getBatchLogs(
             @PathVariable Long batchId,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+        permissionService.requirePermission(user, "view logs");
         List<BatchLogResponse> logs = batchService.getBatchLogs(batchId, user);
         return ResponseEntity.ok(logs);
     }

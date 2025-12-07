@@ -20,15 +20,21 @@ import java.util.List;
 public class InventoryController {
 
     private final InventoryService inventoryService;
+    private final com.cannabis.app.service.PermissionService permissionService;
 
     @PostMapping("/items")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<InventoryItemResponse> createItem(
             @RequestBody CreateInventoryItemRequest request,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "create inventory item");
+
+        if (!permissionService.canManageInventory(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if (!permissionService.canAccessProFeatures(user)) {
+            throw new IllegalStateException("El inventario es una función PRO. Actualiza tu plan.");
         }
 
         InventoryItemResponse response = inventoryService.createItem(request, user);
@@ -36,11 +42,12 @@ public class InventoryController {
     }
 
     @GetMapping("/items")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<List<InventoryItemResponse>> getUserInventory(
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "view inventory");
+
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -49,12 +56,12 @@ public class InventoryController {
     }
 
     @GetMapping("/items/type/{type}")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<List<InventoryItemResponse>> getInventoryByType(
             @PathVariable InventoryItemType type,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "view inventory");
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -63,11 +70,11 @@ public class InventoryController {
     }
 
     @GetMapping("/items/low-stock")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<List<InventoryItemResponse>> getLowStockItems(
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "view inventory");
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -76,12 +83,12 @@ public class InventoryController {
     }
 
     @GetMapping("/items/{itemId}")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<InventoryItemResponse> getItem(
             @PathVariable Long itemId,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "view inventory item");
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -90,12 +97,15 @@ public class InventoryController {
     }
 
     @DeleteMapping("/items/{itemId}")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteItem(
             @PathVariable Long itemId,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "delete inventory item");
+        if (!permissionService.canManageInventory(user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -104,12 +114,15 @@ public class InventoryController {
     }
 
     @PostMapping("/movements")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<InventoryMovementResponse> recordMovement(
             @RequestBody CreateInventoryMovementRequest request,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "record movement");
+        if (!permissionService.canManageInventory(user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -118,12 +131,12 @@ public class InventoryController {
     }
 
     @GetMapping("/items/{itemId}/movements")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<List<InventoryMovementResponse>> getItemMovements(
             @PathVariable Long itemId,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "view movements");
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -132,11 +145,11 @@ public class InventoryController {
     }
 
     @GetMapping("/movements")
-    @PreAuthorize("hasAuthority('PRO') or hasAuthority('ADMIN')")
     public ResponseEntity<List<InventoryMovementResponse>> getAllMovements(
             @AuthenticationPrincipal User user) {
 
-        if (user.getRole() != Role.PRO && user.getRole() != Role.ADMIN) {
+        permissionService.requirePermission(user, "view movements");
+        if (!permissionService.canAccessProFeatures(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

@@ -38,16 +38,26 @@ public class BatchService {
                 .notes(request.getNotes())
                 .currentStage(BatchStage.GERMINATION)
                 .user(user)
+                .organization(user.getOrganization()) // Set organization
                 .build();
 
         batch = batchRepository.save(batch);
-        log.info("Created new batch: {} for user: {}", batch.getName(), user.getEmail());
+        log.info("Created new batch: {} for user: {} in org: {}",
+                batch.getName(), user.getEmail(), user.getOrganization().getName());
 
         return mapToDto(batch);
     }
 
+    public long countUserBatches(User user) {
+        if (user.getOrganization() == null)
+            return 0;
+        return batchRepository.countByOrganizationId(user.getOrganization().getId());
+    }
+
     public List<BatchResponse> getUserBatches(User user) {
-        return batchRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
+        if (user.getOrganization() == null)
+            return List.of();
+        return batchRepository.findByOrganizationIdOrderByCreatedAtDesc(user.getOrganization().getId())
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());

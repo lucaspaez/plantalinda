@@ -53,6 +53,11 @@ public class Batch {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Multi-tenancy: Relación con la organización
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

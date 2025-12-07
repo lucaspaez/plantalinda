@@ -20,11 +20,21 @@ import java.util.Map;
 public class ReportController {
 
     private final ReportService reportService;
+    private final com.cannabis.app.service.PermissionService permissionService;
 
     @PostMapping("/generate")
     public ResponseEntity<Report> generateReport(
             @AuthenticationPrincipal User user,
             @RequestBody Map<String, String> request) {
+
+        permissionService.requirePermission(user, "generate report");
+        if (!permissionService.canGenerateReports(user)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).build();
+        }
+        if (!permissionService.canAccessProFeatures(user)) {
+            throw new IllegalStateException("Los reportes son una función PRO. Actualiza tu plan.");
+        }
+
         ReportType type = ReportType.valueOf(request.get("type"));
         // Parsear usando ZonedDateTime para manejar la 'Z' y convertir a LocalDateTime
         LocalDateTime startDate = ZonedDateTime.parse(request.get("startDate")).toLocalDateTime();
@@ -36,6 +46,14 @@ public class ReportController {
 
     @GetMapping
     public ResponseEntity<List<Report>> getUserReports(@AuthenticationPrincipal User user) {
+        permissionService.requirePermission(user, "view reports");
+        if (!permissionService.canViewReports(user)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).build();
+        }
+        if (!permissionService.canAccessProFeatures(user)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(reportService.getUserReports(user));
     }
 
@@ -43,6 +61,15 @@ public class ReportController {
     public ResponseEntity<Report> getReport(
             @AuthenticationPrincipal User user,
             @PathVariable Long id) {
+
+        permissionService.requirePermission(user, "view report");
+        if (!permissionService.canViewReports(user)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).build();
+        }
+        if (!permissionService.canAccessProFeatures(user)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).build();
+        }
+
         Report report = reportService.getUserReports(user).stream()
                 .filter(r -> r.getId().equals(id))
                 .findFirst()

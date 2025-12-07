@@ -15,4 +15,8 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
     List<Batch> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     List<Batch> findByUserAndCreatedAtBetween(User user, LocalDateTime startDate, LocalDateTime endDate);
+
+    long countByOrganizationId(Long organizationId);
+
+    List<Batch> findByOrganizationIdOrderByCreatedAtDesc(Long organizationId);
 }

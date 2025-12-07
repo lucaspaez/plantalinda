@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
+import ProGuard from '@/components/ProGuard';
+import RoleGuard from '@/components/RoleGuard';
 import api from '@/services/api';
+import { currentUserHasPermission } from '@/utils/permissions';
 
 interface Batch {
     id: number;
@@ -71,11 +74,13 @@ export default function BatchesPage() {
 
     if (loading) {
         return (
-            <DashboardLayout>
-                <div className="flex items-center justify-center h-96">
-                    <div className="text-xl text-gray-600 dark:text-gray-400">Cargando...</div>
-                </div>
-            </DashboardLayout>
+            <ProGuard feature="Lotes & Bitácora">
+                <DashboardLayout>
+                    <div className="flex items-center justify-center h-96">
+                        <div className="text-xl text-gray-600 dark:text-gray-400">Cargando...</div>
+                    </div>
+                </DashboardLayout>
+            </ProGuard>
         );
     }
 
@@ -99,91 +104,101 @@ export default function BatchesPage() {
     }
 
     return (
-        <DashboardLayout>
-            <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <button
-                        onClick={() => router.push('/batches/new')}
-                        className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-lg"
-                    >
-                        + Nuevo Lote
-                    </button>
-                </div>
+        <ProGuard feature="Lotes & Bitácora">
+            <RoleGuard requiredPermission="canViewBatches" feature="Lotes & Bitácora">
+                <DashboardLayout>
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            {currentUserHasPermission('canManageBatches') && (
+                                <button
+                                    onClick={() => router.push('/batches/new')}
+                                    className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-lg"
+                                >
+                                    + Nuevo Lote
+                                </button>
+                            )}
+                        </div>
 
-                {batches.length === 0 ? (
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-center">
-                        <div className="text-6xl mb-4">🌿</div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                            No tienes lotes creados
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-6">
-                            Comienza creando tu primer lote para hacer seguimiento de tu cultivo
-                        </p>
-                        <button
-                            onClick={() => router.push('/batches/new')}
-                            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                            Crear Primer Lote
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {batches.map((batch) => (
-                            <div
-                                key={batch.id}
-                                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
-                            >
-                                <div className="p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                            {batch.strainName}
-                                        </h3>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STAGE_COLORS[batch.currentStage]}`}>
-                                            {STAGE_LABELS[batch.currentStage]}
-                                        </span>
-                                    </div>
-
-                                    <div className="space-y-2 mb-4">
-                                        <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                            <span className="font-semibold mr-2">Lote:</span>
-                                            <span>#{batch.id}</span>
-                                        </div>
-                                        <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                            <span className="font-semibold mr-2">Plantas:</span>
-                                            <span>{batch.plantCount}</span>
-                                        </div>
-                                        <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                            <span className="font-semibold mr-2">Inicio:</span>
-                                            <span>{new Date(batch.startDate).toLocaleDateString()}</span>
-                                        </div>
-                                    </div>
-
-                                    {batch.notes && (
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
-                                            {batch.notes}
-                                        </p>
-                                    )}
-
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => router.push(`/batches/${batch.id}`)}
-                                            className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
-                                        >
-                                            Ver Detalles
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(batch.id)}
-                                            className="px-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                                        >
-                                            🗑️
-                                        </button>
-                                    </div>
-                                </div>
+                        {batches.length === 0 ? (
+                            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-center">
+                                <div className="text-6xl mb-4">🌿</div>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                                    No tienes lotes creados
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                    {currentUserHasPermission('canManageBatches')
+                                        ? 'Comienza creando tu primer lote para hacer seguimiento de tu cultivo'
+                                        : 'No hay lotes disponibles para mostrar. Contacta a un administrador para crear lotes.'}
+                                </p>
+                                {currentUserHasPermission('canManageBatches') && (
+                                    <button
+                                        onClick={() => router.push('/batches/new')}
+                                        className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                                    >
+                                        Crear Primer Lote
+                                    </button>
+                                )}
                             </div>
-                        ))}
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {batches.map((batch) => (
+                                    <div
+                                        key={batch.id}
+                                        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
+                                    >
+                                        <div className="p-6">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                                    {batch.strainName}
+                                                </h3>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STAGE_COLORS[batch.currentStage]}`}>
+                                                    {STAGE_LABELS[batch.currentStage]}
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-2 mb-4">
+                                                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                                                    <span className="font-semibold mr-2">Lote:</span>
+                                                    <span>#{batch.id}</span>
+                                                </div>
+                                                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                                                    <span className="font-semibold mr-2">Plantas:</span>
+                                                    <span>{batch.plantCount}</span>
+                                                </div>
+                                                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                                                    <span className="font-semibold mr-2">Inicio:</span>
+                                                    <span>{new Date(batch.startDate).toLocaleDateString()}</span>
+                                                </div>
+                                            </div>
+
+                                            {batch.notes && (
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
+                                                    {batch.notes}
+                                                </p>
+                                            )}
+
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => router.push(`/batches/${batch.id}`)}
+                                                    className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
+                                                >
+                                                    Ver Detalles
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(batch.id)}
+                                                    className="px-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-        </DashboardLayout>
+                </DashboardLayout>
+            </RoleGuard>
+        </ProGuard>
     );
 }

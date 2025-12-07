@@ -31,8 +31,10 @@ export default function RegisterPage() {
             const { token } = response.data;
             localStorage.setItem("token", token);
             router.push("/dashboard");
-        } catch (err) {
-            setError("Error al crear la cuenta. Por favor intenta de nuevo.");
+        } catch (err: any) {
+            // Extraer mensaje del backend si existe
+            const backendMessage = err?.response?.data?.message;
+            setError(backendMessage || "Error al crear la cuenta. Por favor intenta de nuevo.");
         } finally {
             setLoading(false);
         }

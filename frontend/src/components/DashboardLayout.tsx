@@ -3,6 +3,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import api from '@/services/api';
+import { getUserRoleAndPlan, hasPermission, Role, RolePermissions } from '@/utils/permissions';
 import {
     Home,
     Leaf,
@@ -17,6 +18,7 @@ import {
     Moon,
     Bell,
     User,
+    Users,
     ChevronDown,
     FileText
 } from 'lucide-react';
@@ -31,6 +33,7 @@ interface NavItem {
     icon: any;
     badge?: string;
     pro?: boolean;
+    requiredPermission?: keyof RolePermissions;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -41,19 +44,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
     const [notificationCount, setNotificationCount] = useState(0);
-    const [userRole, setUserRole] = useState('FREE');
+    const [userPlan, setUserPlan] = useState('FREE');
+    const [userRole, setUserRole] = useState<Role>('VIEWER');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                const role = payload.role || payload.authorities?.[0]?.authority || 'FREE';
-                setUserRole(role.replace('ROLE_', ''));
-            } catch (e) {
-                console.error('Error parsing token:', e);
-            }
-        }
+        const { role, plan } = getUserRoleAndPlan();
+        setUserPlan(plan);
+        setUserRole(role);
     }, []);
 
     // Initialize dark mode from localStorage
@@ -97,14 +94,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         router.push('/login');
     };
 
-    const navigation: NavItem[] = [
+    const allNavigation: NavItem[] = [
         { name: 'Dashboard', href: '/dashboard', icon: Home },
-        { name: 'Diagnóstico IA', href: '/diagnosis', icon: Leaf },
-        { name: 'Lotes & Bitácora', href: '/batches', icon: BookOpen, pro: true },
-        { name: 'Inventario', href: '/inventory', icon: Package, pro: true },
-        { name: 'Reportes', href: '/reports', icon: FileText, pro: true },
+        { name: 'Diagnóstico IA', href: '/diagnosis', icon: Leaf, requiredPermission: 'canCreateDiagnosis' },
+        { name: 'Lotes & Bitácora', href: '/batches', icon: BookOpen, pro: true, requiredPermission: 'canViewBatches' },
+        { name: 'Inventario', href: '/inventory', icon: Package, pro: true, requiredPermission: 'canManageInventory' },
+        { name: 'Reportes', href: '/reports', icon: FileText, pro: true, requiredPermission: 'canViewReports' },
+        { name: 'Equipo', href: '/settings/team', icon: Users, pro: true, requiredPermission: 'canViewTeam' },
         { name: 'Herramientas', href: '/tools', icon: Calculator },
     ];
+
+    // Filtrar navegación según permisos del rol
+    const navigation = allNavigation.filter(item => {
+        if (!item.requiredPermission) return true;
+        return hasPermission(userRole, item.requiredPermission);
+    });
 
     const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/');
 
@@ -137,35 +141,45 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
                     {/* Navigation */}
                     <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                        {navigation.map((item) => (
-                            <button
-                                key={item.name}
-                                onClick={() => {
-                                    router.push(item.href);
-                                    setSidebarOpen(false);
-                                }}
-                                className={`
-                                    w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
-                                    ${isActive(item.href)
-                                        ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }
-                                `}
-                            >
-                                <item.icon size={20} />
-                                <span className="flex-1 text-left">{item.name}</span>
-                                {item.pro && userRole !== 'PRO' && (
-                                    <span className="px-2 py-0.5 text-xs font-semibold bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">
-                                        PRO
-                                    </span>
-                                )}
-                                {item.badge && (
-                                    <span className="px-2 py-0.5 text-xs font-semibold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded">
-                                        {item.badge}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
+                        {navigation.map((item) => {
+                            const isPro = item.pro;
+                            const isFreePlan = userPlan !== 'PRO' && userPlan !== 'ENTERPRISE';
+
+                            return (
+                                <button
+                                    key={item.name}
+                                    onClick={() => {
+                                        // Si es menú PRO y usuario FREE, redirigir a upgrade
+                                        if (isPro && isFreePlan) {
+                                            router.push('/upgrade');
+                                        } else {
+                                            router.push(item.href);
+                                        }
+                                        setSidebarOpen(false);
+                                    }}
+                                    className={`
+                                        w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
+                                        ${isActive(item.href)
+                                            ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }
+                                    `}
+                                >
+                                    <item.icon size={20} />
+                                    <span className="flex-1 text-left">{item.name}</span>
+                                    {isPro && isFreePlan && (
+                                        <span className="px-2 py-0.5 text-xs font-semibold bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">
+                                            PRO
+                                        </span>
+                                    )}
+                                    {item.badge && (
+                                        <span className="px-2 py-0.5 text-xs font-semibold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded">
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
                     </nav>
 
                     {/* User section */}
