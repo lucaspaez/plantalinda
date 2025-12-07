@@ -14,7 +14,7 @@ Un atacante en la red podría interceptar esta información fácilmente.
 
 ## 📋 Requisitos Previos
 
-1. **Dominio registrado**: Necesitas un dominio (ej: `mi-app-cannabis.com`)
+1. **Dominio registrado**: Necesitas un dominio (ej: `mi-app-plantalinda.com`)
 2. **Servidor con IP pública**: El dominio debe apuntar a la IP de tu servidor
 3. **Puertos abiertos**: 
    - Puerto 80 (HTTP) - Para validación de Let's Encrypt
@@ -27,14 +27,14 @@ Un atacante en la red podría interceptar esta información fácilmente.
 ### Paso 1: Configurar DNS
 Apunta tu dominio a la IP de tu servidor:
 ```
-Tipo A: mi-app-cannabis.com → TU_IP_PUBLICA
-Tipo A: www.mi-app-cannabis.com → TU_IP_PUBLICA
+Tipo A: mi-app-plantalinda.com → TU_IP_PUBLICA
+Tipo A: www.mi-app-plantalinda.com → TU_IP_PUBLICA
 ```
 
 ### Paso 2: Ejecutar script de inicialización
 ```bash
 chmod +x init-letsencrypt.sh
-./init-letsencrypt.sh mi-app-cannabis.com tu-email@ejemplo.com
+./init-letsencrypt.sh mi-app-plantalinda.com tu-email@ejemplo.com
 ```
 
 Este script:
@@ -44,7 +44,7 @@ Este script:
 4. Configura renovación automática
 
 ### Paso 3: Verificar
-Visita `https://mi-app-cannabis.com` y verifica:
+Visita `https://mi-app-plantalinda.com` y verifica:
 - ✅ Candado verde en el navegador
 - ✅ Certificado válido
 - ✅ Sin warnings de seguridad
@@ -61,7 +61,7 @@ mkdir -p nginx/ssl
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout nginx/ssl/selfsigned.key \
   -out nginx/ssl/selfsigned.crt \
-  -subj "/C=AR/ST=BuenosAires/L=CABA/O=CannabisApp/CN=localhost"
+  -subj "/C=AR/ST=BuenosAires/L=CABA/O=plantalindaApp/CN=localhost"
 ```
 
 ### Actualizar nginx.conf:

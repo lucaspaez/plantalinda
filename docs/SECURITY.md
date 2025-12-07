@@ -1,4 +1,4 @@
-# 🔐 Guía de Seguridad - Cannabis Cultivation SaaS
+# 🔐 Guía de Seguridad - Planta Linda
 
 ## ⚠️ Vulnerabilidades Actuales (Desarrollo)
 
@@ -170,7 +170,7 @@ AI_SERVICE_API_KEY=clave_para_ai_service
 - Consentimiento explícito para uso de datos
 - Política de privacidad clara
 
-### **Regulaciones de Cannabis**
+### **Regulaciones de plantalinda**
 - Verificar legalidad en tu jurisdicción
 - Cumplir con regulaciones locales
 - Trazabilidad según normativa

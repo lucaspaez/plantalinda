@@ -17,7 +17,7 @@ Este script:
 - ✅ Muestra tamaño del archivo
 - ✅ Maneja errores automáticamente
 
-**Ubicación del backup**: `.\backups\backup_cannabis_db_YYYYMMDD_HHMMSS.sql`
+**Ubicación del backup**: `.\backups\backup_plantalinda_db_YYYYMMDD_HHMMSS.sql`
 
 ---
 
@@ -30,7 +30,7 @@ Este script:
 docker ps
 
 # Backup desde contenedor de PostgreSQL
-docker exec -t cannabis_db pg_dump -U postgres cannabis_db > backups\backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').sql
+docker exec -t plantalinda_db pg_dump -U postgres plantalinda_db > backups\backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').sql
 ```
 
 O usar el script específico para Docker:
@@ -47,11 +47,11 @@ O usar el script específico para Docker:
 
 1. Abre **pgAdmin**
 2. Conecta a tu servidor PostgreSQL
-3. Navega a: `Servers` → `PostgreSQL` → `Databases` → `cannabis_db`
-4. Click derecho en `cannabis_db`
+3. Navega a: `Servers` → `PostgreSQL` → `Databases` → `plantalinda_db`
+4. Click derecho en `plantalinda_db`
 5. Selecciona **"Backup..."**
 6. Configuración:
-   - **Filename**: `D:\backups\backup_cannabis_db.sql`
+   - **Filename**: `D:\backups\backup_plantalinda_db.sql`
    - **Format**: Plain (SQL)
    - **Encoding**: UTF8
 7. Click **"Backup"**
@@ -67,7 +67,7 @@ O usar el script específico para Docker:
 cd "C:\Program Files\PostgreSQL\16\bin"
 
 # Ejecutar pg_dump
-.\pg_dump.exe -h localhost -p 5432 -U postgres -F p -f "D:\backups\backup_cannabis_db.sql" cannabis_db
+.\pg_dump.exe -h localhost -p 5432 -U postgres -F p -f "D:\backups\backup_plantalinda_db.sql" plantalinda_db
 ```
 
 **Nota**: Reemplaza `16` con tu versión de PostgreSQL
@@ -80,26 +80,26 @@ cd "C:\Program Files\PostgreSQL\16\bin"
 
 ```powershell
 # Si tienes pg_dump en PATH
-psql -U postgres -d cannabis_db < backups\backup_cannabis_db_20251204_114500.sql
+psql -U postgres -d plantalinda_db < backups\backup_plantalinda_db_20251204_114500.sql
 
 # Si no está en PATH
 cd "C:\Program Files\PostgreSQL\16\bin"
-.\psql.exe -U postgres -d cannabis_db < "D:\backups\backup_cannabis_db_20251204_114500.sql"
+.\psql.exe -U postgres -d plantalinda_db < "D:\backups\backup_plantalinda_db_20251204_114500.sql"
 ```
 
 ### Desde Docker:
 
 ```powershell
 # Copiar backup al contenedor
-docker cp backups\backup.sql cannabis_db:/tmp/backup.sql
+docker cp backups\backup.sql plantalinda_db:/tmp/backup.sql
 
 # Restaurar
-docker exec -i cannabis_db psql -U postgres -d cannabis_db < /tmp/backup.sql
+docker exec -i plantalinda_db psql -U postgres -d plantalinda_db < /tmp/backup.sql
 ```
 
 ### Desde pgAdmin:
 
-1. Click derecho en `cannabis_db`
+1. Click derecho en `plantalinda_db`
 2. Selecciona **"Restore..."**
 3. Selecciona el archivo de backup
 4. Click **"Restore"**
@@ -127,7 +127,7 @@ docker exec -i cannabis_db psql -U postgres -d cannabis_db < /tmp/backup.sql
 psql -U postgres
 
 -- Crear DB de prueba
-CREATE DATABASE cannabis_db_test;
+CREATE DATABASE plantalinda_db_test;
 
 -- Salir
 \q
@@ -136,13 +136,13 @@ CREATE DATABASE cannabis_db_test;
 ### Restaurar backup en DB de prueba:
 
 ```powershell
-psql -U postgres -d cannabis_db_test < backups\backup_cannabis_db_20251204_114500.sql
+psql -U postgres -d plantalinda_db_test < backups\backup_plantalinda_db_20251204_114500.sql
 ```
 
 ### Verificar datos:
 
 ```sql
-psql -U postgres -d cannabis_db_test
+psql -U postgres -d plantalinda_db_test
 
 -- Verificar tablas
 \dt
@@ -170,7 +170,7 @@ Get-ChildItem .\backups\
 Get-ChildItem .\backups\ | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Format-List Name, Length, LastWriteTime
 
 # Ver primeras líneas del backup
-Get-Content .\backups\backup_cannabis_db_*.sql -Head 20
+Get-Content .\backups\backup_plantalinda_db_*.sql -Head 20
 ```
 
 **El backup debe contener**:
@@ -187,7 +187,7 @@ Get-Content .\backups\backup_cannabis_db_*.sql -Head 20
 1. **Encriptar backups sensibles**:
 ```powershell
 # Comprimir y proteger con contraseña (requiere 7-Zip)
-7z a -p -mhe=on backups\backup_encrypted.7z backups\backup_cannabis_db_*.sql
+7z a -p -mhe=on backups\backup_encrypted.7z backups\backup_plantalinda_db_*.sql
 ```
 
 2. **Guardar en múltiples ubicaciones**:
@@ -196,7 +196,7 @@ Get-Content .\backups\backup_cannabis_db_*.sql -Head 20
    - Cloud (Google Drive, Dropbox, etc.)
 
 3. **Nombrar con timestamp**:
-   - Formato: `backup_cannabis_db_YYYYMMDD_HHMMSS.sql`
+   - Formato: `backup_plantalinda_db_YYYYMMDD_HHMMSS.sql`
    - Facilita identificar versiones
 
 4. **Retención**:
@@ -246,7 +246,7 @@ $env:PGPASSWORD = $null  # Limpiar después
 psql -U postgres -c "\l"
 
 # O con Docker
-docker exec cannabis_db psql -U postgres -c "\l"
+docker exec plantalinda_db psql -U postgres -c "\l"
 ```
 
 ---

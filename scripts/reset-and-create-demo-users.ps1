@@ -5,8 +5,8 @@ Write-Host "  RESET Y CREACION DE USUARIOS DEMO" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
-$CONTAINER_NAME = "cannabis_db"
-$DB_NAME = "cannabis_db"
+$CONTAINER_NAME = "plantalinda_db"
+$DB_NAME = "plantalinda_db"
 $DB_USER = "postgres"
 $SQL_FILE = ".\reset-and-create-demo-users.sql"
 

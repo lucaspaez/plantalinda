@@ -3,9 +3,9 @@ version: '3.8'
 services:
   db:
     image: postgres:15
-    container_name: cannabis_db_prod
+    container_name: plantalinda_db_prod
     environment:
-      POSTGRES_DB: ${DB_NAME:-cannabis_db}
+      POSTGRES_DB: ${DB_NAME:-plantalinda_db}
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     volumes:
@@ -14,9 +14,9 @@ services:
 
   backend:
     build: ./backend
-    container_name: cannabis_backend_prod
+    container_name: plantalinda_backend_prod
     environment:
-      - DB_URL=jdbc:postgresql://db:5432/${DB_NAME:-cannabis_db}
+      - DB_URL=jdbc:postgresql://db:5432/${DB_NAME:-plantalinda_db}
       - DB_USERNAME=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - JWT_SECRET=${JWT_SECRET}
@@ -30,7 +30,7 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: cannabis_frontend_prod
+    container_name: plantalinda_frontend_prod
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8081/api/v1
     ports:
@@ -41,14 +41,14 @@ services:
 
   ai-service:
     build: ./ai-service
-    container_name: cannabis_ai_service_prod
+    container_name: plantalinda_ai_service_prod
     ports:
       - "8000:8000"
     restart: always
 
   nginx:
     build: ./nginx
-    container_name: cannabis_nginx_prod
+    container_name: plantalinda_nginx_prod
     ports:
       - "80:80"
       - "443:443"
@@ -64,7 +64,7 @@ services:
 
   certbot:
     image: certbot/certbot
-    container_name: cannabis_certbot_prod
+    container_name: plantalinda_certbot_prod
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot

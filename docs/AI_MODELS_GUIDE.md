@@ -59,13 +59,13 @@ trainer.train()
 
 3. **Subir a Hugging Face**
 ```python
-model.push_to_hub("tu-usuario/cannabis-disease-detector")
+model.push_to_hub("tu-usuario/plantalinda-disease-detector")
 ```
 
 4. **Usar en la app**
 ```yaml
 # config.yaml
-model_name: "tu-usuario/cannabis-disease-detector"
+model_name: "tu-usuario/plantalinda-disease-detector"
 ```
 
 ### Opción B: Fine-tuning de modelo existente
@@ -93,7 +93,7 @@ for param in model.base_model.parameters():
 ```yaml
 model_name: "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
 # Pros: Rápido, ligero, buena precisión general
-# Contras: No específico para cannabis
+# Contras: No específico para plantalinda
 ```
 
 ### Para Detección de Enfermedades
@@ -107,7 +107,7 @@ model_name: "nateraw/vit-base-beans"
 ```yaml
 model_name: "google/vit-base-patch16-224"
 # Pros: Muy versátil, se puede fine-tunear fácilmente
-# Contras: Genérico, necesita fine-tuning para cannabis
+# Contras: Genérico, necesita fine-tuning para plantalinda
 ```
 
 ---
@@ -150,7 +150,7 @@ def analyze_with_gpt4_vision(image_url):
         messages=[{
             "role": "user",
             "content": [
-                {"type": "text", "text": "Diagnose this cannabis plant"},
+                {"type": "text", "text": "Diagnose this plantalinda plant"},
                 {"type": "image_url", "image_url": image_url}
             ]
         }]
@@ -184,7 +184,7 @@ def analyze_with_google_vision(image_path):
 | ViT-Base | ⚡⚡ | ⭐⭐⭐⭐ | 💾💾 | Detalles finos |
 | ResNet50 | ⚡⚡ | ⭐⭐⭐ | 💾💾 | Robusto |
 | EfficientNet | ⚡⚡⚡ | ⭐⭐⭐⭐ | 💾 | Balanceado |
-| Custom (tuyo) | ⚡⚡ | ⭐⭐⭐⭐⭐ | 💾💾 | Cannabis específico |
+| Custom (tuyo) | ⚡⚡ | ⭐⭐⭐⭐⭐ | 💾💾 | plantalinda específico |
 
 ---
 

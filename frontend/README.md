@@ -1,4 +1,4 @@
-# Cannabis App Frontend
+# Planta Linda Frontend
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped manually.
 

@@ -1,4 +1,4 @@
-# Python AI Service for Cannabis Plant Diagnosis
+# Python AI Service for Plant Diagnosis
 
 This service provides AI-powered plant disease and pest detection using computer vision.
 

@@ -7,8 +7,8 @@ $API_URL = "http://localhost:8081/api/v1/auth"
 
 # Primero, eliminar usuarios demo existentes de la BD
 Write-Host "Limpiando usuarios demo existentes..." -ForegroundColor Yellow
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "DELETE FROM _user WHERE email IN ('demo@demo.com', 'demopro@demo.com', 'demo@pro.com');"
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "DELETE FROM organization WHERE slug IN ('demo-free-org', 'demo-pro-org');"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "DELETE FROM _user WHERE email IN ('demo@demo.com', 'demopro@demo.com', 'demo@pro.com');"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "DELETE FROM organization WHERE slug IN ('demo-free-org', 'demo-pro-org');"
 
 Write-Host ""
 
@@ -28,10 +28,10 @@ try {
     Write-Host "   Token recibido" -ForegroundColor Gray
     
     # Actualizar a plan FREE y crear organización
-    $userId1 = docker exec -t cannabis_db psql -U postgres -d cannabis_db -t -c "SELECT id FROM _user WHERE email = 'demo@demo.com';"
+    $userId1 = docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -t -c "SELECT id FROM _user WHERE email = 'demo@demo.com';"
     $userId1 = $userId1.Trim()
     
-    docker exec -t cannabis_db psql -U postgres -d cannabis_db -c @"
+    docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c @"
     INSERT INTO organization (name, slug, plan, owner_id, active, max_users, max_batches, created_at, updated_at)
     VALUES ('Demo FREE Organization', 'demo-free-org', 'FREE', $userId1, TRUE, 1, 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
     
@@ -61,10 +61,10 @@ try {
     Write-Host "   Token recibido" -ForegroundColor Gray
     
     # Actualizar a plan PRO y crear organización
-    $userId2 = docker exec -t cannabis_db psql -U postgres -d cannabis_db -t -c "SELECT id FROM _user WHERE email = 'demopro@demo.com';"
+    $userId2 = docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -t -c "SELECT id FROM _user WHERE email = 'demopro@demo.com';"
     $userId2 = $userId2.Trim()
     
-    docker exec -t cannabis_db psql -U postgres -d cannabis_db -c @"
+    docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c @"
     INSERT INTO organization (name, slug, plan, owner_id, active, max_users, max_batches, created_at, updated_at)
     VALUES ('Demo PRO Organization', 'demo-pro-org', 'PRO', $userId2, TRUE, 10, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
     
@@ -78,7 +78,7 @@ catch {
 
 Write-Host ""
 Write-Host "Verificando usuarios creados..." -ForegroundColor Yellow
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "SELECT u.email, u.firstname, u.role, o.name as organization, o.plan FROM _user u LEFT JOIN organization o ON u.organization_id = o.id WHERE u.email LIKE '%demo%';"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "SELECT u.email, u.firstname, u.role, o.name as organization, o.plan FROM _user u LEFT JOIN organization o ON u.organization_id = o.id WHERE u.email LIKE '%demo%';"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green

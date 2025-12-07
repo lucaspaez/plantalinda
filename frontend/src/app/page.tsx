@@ -10,7 +10,7 @@ export default function LandingPage() {
         {
             icon: Brain,
             title: 'Diagnóstico IA Avanzado',
-            description: 'Identifica problemas en tus plantas al instante con inteligencia artificial especializada en cannabis medicinal'
+            description: 'Identifica problemas en tus plantas al instante con inteligencia artificial especializada en plantas medicinales'
         },
         {
             icon: Calculator,
@@ -118,7 +118,7 @@ export default function LandingPage() {
                         </span>
                     </h1>
                     <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                        La solución completa para gestión de cannabis medicinal con trazabilidad, cumplimiento regulatorio y optimización de producción
+                        La solución completa para gestión de plantas medicinales con trazabilidad, cumplimiento regulatorio y optimización de producción
                     </p>
                     <div className="flex gap-4 justify-center flex-wrap">
                         <button
@@ -249,7 +249,7 @@ export default function LandingPage() {
                                 <span className="text-xl font-bold">Plata Linda</span>
                             </div>
                             <p className="text-gray-400">
-                                Gestión profesional para cultivadores y productores de cannabis medicinal
+                                Gestión profesional para cultivadores y productores de plantas medicinales
                             </p>
                         </div>
                         <div>

@@ -216,7 +216,7 @@ export default function DashboardPage() {
                         ¡Bienvenido de vuelta! 🌿
                     </h2>
                     <p className="text-green-100">
-                        Gestiona tu cultivo de cannabis medicinal de forma profesional
+                        Gestiona tu cultivo de plantas medicinales de forma profesional
                     </p>
                     {userPlan === 'FREE' && (
                         <button

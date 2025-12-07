@@ -111,7 +111,7 @@ export default function UpgradePage() {
                         </ul>
 
                         <button
-                            onClick={() => alert('Funcionalidad de pago en desarrollo. Contacta a soporte@cannabisapp.com')}
+                            onClick={() => alert('Funcionalidad de pago en desarrollo. Contacta a soporte@plantalinda.com')}
                             className="w-full bg-white text-purple-600 py-3 rounded-lg font-bold hover:bg-purple-50 transition-colors shadow-lg"
                         >
                             Actualizar Ahora

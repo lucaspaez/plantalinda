@@ -71,7 +71,7 @@ List<Batch> findByOrganizationId(@Param("orgId") Long orgId);
 ```
 /
 ├── backend/
-│   ├── src/main/java/com/cannabis/app/
+│   ├── src/main/java/com/plantalinda/app/
 │   │   ├── controller/    # REST endpoints
 │   │   ├── service/       # Lógica de negocio
 │   │   ├── model/         # Entidades JPA

@@ -1,5 +1,5 @@
-$backendPath = "d:\Desarrollo\Proyecto Necesidad de Cultivadores de Cannabis Medicinal\backend"
-$frontendPath = "d:\Desarrollo\Proyecto Necesidad de Cultivadores de Cannabis Medicinal\frontend"
+$backendPath = "d:\Desarrollo\Proyecto Necesidad de Cultivadores de plantalinda Medicinal\backend"
+$frontendPath = "d:\Desarrollo\Proyecto Necesidad de Cultivadores de plantalinda Medicinal\frontend"
 
 Write-Host "Starting Backend Server..." -ForegroundColor Green
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$backendPath'; mvn spring-boot:run"

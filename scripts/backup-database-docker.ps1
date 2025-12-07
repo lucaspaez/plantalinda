@@ -5,8 +5,8 @@ Write-Host "Docker PostgreSQL Backup" -ForegroundColor Cyan
 Write-Host ""
 
 # Configuracion
-$CONTAINER_NAME = "cannabis_db"
-$DB_NAME = "cannabis_db"
+$CONTAINER_NAME = "plantalinda_db"
+$DB_NAME = "plantalinda_db"
 $DB_USER = "postgres"
 $BACKUP_DIR = ".\backups"
 $TIMESTAMP = Get-Date -Format "yyyyMMdd_HHmmss"

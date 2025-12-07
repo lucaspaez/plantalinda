@@ -1,4 +1,4 @@
-# 🧪 Tests del Backend - Cannabis Cultivation SaaS
+# 🧪 Tests del Backend - plantalinda Cultivation SaaS
 
 ## Cobertura de Tests Implementados
 

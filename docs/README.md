@@ -1,6 +1,6 @@
 # Documentación del Proyecto
 
-## Cannabis Cultivation SaaS - Guías Técnicas
+## Planta Linda - Guías Técnicas
 
 ### Índice
 

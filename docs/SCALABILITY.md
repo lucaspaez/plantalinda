@@ -1,4 +1,4 @@
-# 📊 Análisis de Escalabilidad - Cannabis Cultivation SaaS
+# 📊 Análisis de Escalabilidad - Planta Linda
 
 ## 🎯 Objetivo: Soportar 1000+ Usuarios Concurrentes
 

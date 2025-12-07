@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Cannabis Cultivation AI Assistant",
-    description: "AI-powered diagnosis and traceability for medicinal cannabis cultivators.",
+    title: "Planta Linda - Asistente de Cultivo",
+    description: "AI-powered diagnosis and traceability for medicinal plant cultivators.",
 };
 
 export default function RootLayout({

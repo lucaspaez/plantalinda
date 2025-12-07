@@ -44,26 +44,26 @@ El script mostrará:
 ### Paso 1: Copiar SQL al Contenedor
 
 ```powershell
-docker cp .\backend\src\main\resources\db\migration\V1__multi_tenancy.sql cannabis_db:/tmp/migration.sql
+docker cp .\backend\src\main\resources\db\migration\V1__multi_tenancy.sql plantalinda_db:/tmp/migration.sql
 ```
 
 ### Paso 2: Ejecutar Migración
 
 ```powershell
-docker exec -i cannabis_db psql -U postgres -d cannabis_db -f /tmp/migration.sql
+docker exec -i plantalinda_db psql -U postgres -d plantalinda_db -f /tmp/migration.sql
 ```
 
 ### Paso 3: Verificar Datos
 
 ```powershell
 # Usuarios sin organización (debe ser 0)
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "SELECT COUNT(*) FROM _user WHERE organization_id IS NULL;"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "SELECT COUNT(*) FROM _user WHERE organization_id IS NULL;"
 
 # Organizaciones creadas
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "SELECT id, name, slug, plan FROM organization;"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "SELECT id, name, slug, plan FROM organization;"
 
 # Distribución de roles
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "SELECT role, COUNT(*) FROM _user GROUP BY role;"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "SELECT role, COUNT(*) FROM _user GROUP BY role;"
 ```
 
 ---
@@ -168,7 +168,7 @@ docker-compose logs -f backend
 ```
 
 Buscar:
-- ✅ "Started CannabisAppApplication"
+- ✅ "Started plantalindaAppApplication"
 - ✅ Sin errores de Hibernate
 - ✅ Sin errores de conexión a DB
 
@@ -189,7 +189,7 @@ Buscar:
 **Solución**:
 ```powershell
 # Verificar si la tabla existe
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "\dt organization"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "\dt organization"
 
 # Si no existe, ejecutar migración nuevamente
 .\run-migration.ps1
@@ -204,7 +204,7 @@ docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "\dt organization"
 **Solución**:
 ```powershell
 # Restaurar desde backup
-docker exec -i cannabis_db psql -U postgres -d cannabis_db < backups\backup.sql
+docker exec -i plantalinda_db psql -U postgres -d plantalinda_db < backups\backup.sql
 
 # Ejecutar migración nuevamente
 .\run-migration.ps1
@@ -265,7 +265,7 @@ docker-compose logs backend
 docker-compose stop backend
 
 # Restaurar base de datos
-docker exec -i cannabis_db psql -U postgres -d cannabis_db < backups\backup_cannabis_db_[TIMESTAMP].sql
+docker exec -i plantalinda_db psql -U postgres -d plantalinda_db < backups\backup_plantalinda_db_[TIMESTAMP].sql
 
 # Reiniciar servicios
 docker-compose up -d

@@ -127,10 +127,10 @@ docker-compose -f docker-compose.prod.yml logs -f
 - `SECURITY.md` - Guía de seguridad
 
 ### Tests
-- `backend/src/test/java/com/cannabis/app/auth/AuthenticationServiceTest.java`
-- `backend/src/test/java/com/cannabis/app/service/FileStorageServiceTest.java`
-- `backend/src/test/java/com/cannabis/app/service/ReportServiceTest.java`
-- `backend/src/test/java/com/cannabis/app/service/BatchServiceTest.java`
+- `backend/src/test/java/com/plantalinda/app/auth/AuthenticationServiceTest.java`
+- `backend/src/test/java/com/plantalinda/app/service/FileStorageServiceTest.java`
+- `backend/src/test/java/com/plantalinda/app/service/ReportServiceTest.java`
+- `backend/src/test/java/com/plantalinda/app/service/BatchServiceTest.java`
 
 ---
 

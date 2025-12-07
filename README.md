@@ -1,6 +1,6 @@
-# 🌱 Cannabis Cultivation SaaS
+# 🌱 Planta Linda
 
-Sistema de gestión integral para cultivadores de cannabis medicinal con diagnóstico por IA, trazabilidad de lotes, y gestión de inventario.
+Sistema de gestión integral para cultivadores de plantalinda medicinal con diagnóstico por IA, trazabilidad de lotes, y gestión de inventario.
 
 ## 🚀 Inicio Rápido
 
@@ -68,7 +68,7 @@ cd frontend && npm run dev
 ```
 # Base de Datos
 Host: localhost:5432
-Database: cannabis_db
+Database: plantalinda_db
 User: postgres
 Password: postgres
 

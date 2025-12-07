@@ -193,7 +193,7 @@ curl -X GET http://localhost:8081/api/v1/organization/stats \
 1. Recarga la página
 2. Verifica en la base de datos:
 ```bash
-docker exec -t cannabis_db psql -U postgres -d cannabis_db -c "SELECT email, role FROM _user;"
+docker exec -t plantalinda_db psql -U postgres -d plantalinda_db -c "SELECT email, role FROM _user;"
 ```
 
 ---

@@ -8,11 +8,11 @@
 		<version>3.2.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.cannabis.app</groupId>
+	<groupId>com.plantalinda.app</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Cannabis Cultivation SaaS Backend</name>
-	<description>Backend for Cannabis Cultivation SaaS Application</description>
+	<name>plantalinda Cultivation SaaS Backend</name>
+	<description>Backend for plantalinda Cultivation SaaS Application</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

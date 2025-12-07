@@ -4,7 +4,7 @@
 Write-Host "🔄 Creando backup de la base de datos..." -ForegroundColor Cyan
 
 # Configuración
-$DB_NAME = "cannabis_db"
+$DB_NAME = "plantalinda_db"
 $DB_USER = "postgres"
 $DB_HOST = "localhost"
 $DB_PORT = "5432"
@@ -41,7 +41,7 @@ if (-not $pgDumpPath) {
     Write-Host ""
     Write-Host "Opciones:" -ForegroundColor Yellow
     Write-Host "1. Si tienes Docker con PostgreSQL corriendo:" -ForegroundColor White
-    Write-Host "   docker exec -t cannabis_db pg_dump -U $DB_USER $DB_NAME > $BACKUP_FILE" -ForegroundColor Cyan
+    Write-Host "   docker exec -t plantalinda_db pg_dump -U $DB_USER $DB_NAME > $BACKUP_FILE" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "2. Si tienes PostgreSQL instalado localmente:" -ForegroundColor White
     Write-Host "   Agrega PostgreSQL\bin a tu PATH" -ForegroundColor Cyan
@@ -49,7 +49,7 @@ if (-not $pgDumpPath) {
     Write-Host ""
     Write-Host "3. Usar pgAdmin (interfaz gráfica):" -ForegroundColor White
     Write-Host "   - Abre pgAdmin" -ForegroundColor Cyan
-    Write-Host "   - Click derecho en 'cannabis_db'" -ForegroundColor Cyan
+    Write-Host "   - Click derecho en 'plantalinda_db'" -ForegroundColor Cyan
     Write-Host "   - Backup..." -ForegroundColor Cyan
     Write-Host "   - Selecciona ubicación y formato" -ForegroundColor Cyan
     exit 1
