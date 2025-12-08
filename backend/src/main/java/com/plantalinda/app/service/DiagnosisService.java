@@ -97,9 +97,9 @@ public class DiagnosisService {
         } catch (Exception e) {
             log.error("Error calling AI service, using fallback: {}", e.getMessage());
             // Fallback to mock response if AI service is unavailable
-            predictedIssue = "Nitrogen Deficiency (AI Service Unavailable)";
+            predictedIssue = "Deficiencia de Nitrógeno (Servicio IA no disponible)";
             confidence = 0.85;
-            correctiveAction = "Apply a nitrogen-rich fertilizer. Ensure pH is between 6.0 and 6.5. Note: This is a fallback response.";
+            correctiveAction = "Aplicar fertilizante rico en nitrógeno. Asegurar pH entre 6.0 y 6.5. Nota: Esta es una respuesta de respaldo.";
         }
 
         // 3. Save Result with context
