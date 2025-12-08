@@ -1,0 +1,98 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: plantalinda-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-plantalinda_db}
+      POSTGRES_USER: ${POSTGRES_USER:-plantalinda}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-plantalinda123}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - plantalinda-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U plantalinda -d plantalinda_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: plantalinda-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-plantalinda_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-plantalinda}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-plantalinda123}
+      JWT_SECRET: ${JWT_SECRET:-cambiar-en-produccion}
+    volumes:
+      - ./data/uploads:/app/uploads
+    networks:
+      - plantalinda-network
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plantalinda-api.rule=Host(`${DOMAIN:-preprod.plantalinda.com}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.plantalinda-api.tls=true"
+      - "traefik.http.routers.plantalinda-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.plantalinda-api.loadbalancer.server.port=8081"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: plantalinda-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: https://${DOMAIN:-preprod.plantalinda.com}/api
+    networks:
+      - plantalinda-network
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plantalinda-web.rule=Host(`${DOMAIN:-preprod.plantalinda.com}`)"
+      - "traefik.http.routers.plantalinda-web.tls=true"
+      - "traefik.http.routers.plantalinda-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.plantalinda-web.loadbalancer.server.port=3000"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: plantalinda-ai
+    restart: unless-stopped
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+    networks:
+      - plantalinda-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  plantalinda-network:
+    driver: bridge
+  traefik-network:
+    external: true
