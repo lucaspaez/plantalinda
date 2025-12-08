@@ -133,9 +133,15 @@ public class DiagnosisService {
     }
 
     private DiagnosisResponse mapToDto(Diagnosis diagnosis) {
+        // Construir URL completa para la imagen
+        String imageUrl = diagnosis.getImageUrl();
+        if (imageUrl != null && !imageUrl.startsWith("/uploads/") && !imageUrl.startsWith("http")) {
+            imageUrl = "/uploads/" + imageUrl;
+        }
+
         return DiagnosisResponse.builder()
                 .id(diagnosis.getId())
-                .imageUrl(diagnosis.getImageUrl())
+                .imageUrl(imageUrl)
                 .predictedIssue(diagnosis.getPredictedIssue())
                 .confidence(diagnosis.getConfidence())
                 .correctiveAction(diagnosis.getCorrectiveAction())

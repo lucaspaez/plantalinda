@@ -43,55 +43,55 @@ model = None
 processor = None
 current_model_name = None
 
-# Disease/Issue mapping with corrective actions
+# Disease/Issue mapping with corrective actions (Spanish)
 ISSUE_ACTIONS = {
     "nitrogen_deficiency": {
-        "issue": "Nitrogen Deficiency",
-        "action": "Apply nitrogen-rich fertilizer (NPK 10-5-5). Increase feeding frequency. Monitor leaf color recovery over 5-7 days."
+        "issue": "Deficiencia de Nitrógeno",
+        "action": "Aplicar fertilizante rico en nitrógeno (NPK 10-5-5). Aumentar frecuencia de alimentación. Monitorear recuperación del color de hojas en 5-7 días."
     },
     "phosphorus_deficiency": {
-        "issue": "Phosphorus Deficiency",
-        "action": "Use bloom fertilizer with higher P ratio (NPK 5-10-5). Check pH levels (6.0-7.0 for soil). Flush if nutrient lockout suspected."
+        "issue": "Deficiencia de Fósforo",
+        "action": "Usar fertilizante de floración con mayor proporción de P (NPK 5-10-5). Verificar niveles de pH (6.0-7.0 para tierra). Lavar si se sospecha bloqueo de nutrientes."
     },
     "potassium_deficiency": {
-        "issue": "Potassium Deficiency",
-        "action": "Apply potassium supplement or bloom booster. Ensure proper pH. Monitor leaf edges for improvement."
+        "issue": "Deficiencia de Potasio",
+        "action": "Aplicar suplemento de potasio o estimulador de floración. Asegurar pH adecuado. Monitorear bordes de hojas para mejora."
     },
     "calcium_deficiency": {
-        "issue": "Calcium Deficiency",
-        "action": "Add CalMag supplement. Check pH and ensure proper watering schedule. Increase humidity if too low."
+        "issue": "Deficiencia de Calcio",
+        "action": "Agregar suplemento CalMag. Verificar pH y asegurar programa de riego adecuado. Aumentar humedad si está muy baja."
     },
     "magnesium_deficiency": {
-        "issue": "Magnesium Deficiency",
-        "action": "Apply Epsom salt solution (1 tsp/gallon). Adjust pH to optimal range. Reduce potassium if excessive."
+        "issue": "Deficiencia de Magnesio",
+        "action": "Aplicar solución de sales de Epsom (1 cucharadita/galón). Ajustar pH al rango óptimo. Reducir potasio si es excesivo."
     },
     "spider_mites": {
-        "issue": "Spider Mites Infestation",
-        "action": "Isolate plant immediately. Spray with neem oil or insecticidal soap. Increase humidity. Repeat treatment every 3 days for 2 weeks."
+        "issue": "Infestación de Ácaros",
+        "action": "Aislar planta inmediatamente. Rociar con aceite de neem o jabón insecticida. Aumentar humedad. Repetir tratamiento cada 3 días por 2 semanas."
     },
     "powdery_mildew": {
-        "issue": "Powdery Mildew",
-        "action": "Remove affected leaves. Improve air circulation. Apply fungicide or milk spray (1:9 ratio). Reduce humidity below 50%."
+        "issue": "Oídio (Mildiu Polvoriento)",
+        "action": "Remover hojas afectadas. Mejorar circulación de aire. Aplicar fungicida o spray de leche (proporción 1:9). Reducir humedad por debajo del 50%."
     },
     "bud_rot": {
-        "issue": "Bud Rot (Botrytis)",
-        "action": "Remove infected buds immediately. Improve ventilation. Reduce humidity to 40-45%. Increase airflow around plants."
+        "issue": "Podredumbre del Cogollo (Botrytis)",
+        "action": "Remover cogollos infectados inmediatamente. Mejorar ventilación. Reducir humedad a 40-45%. Aumentar flujo de aire alrededor de plantas."
     },
     "heat_stress": {
-        "issue": "Heat Stress",
-        "action": "Lower temperature to 20-26°C. Increase air circulation. Ensure adequate watering. Provide shade if needed."
+        "issue": "Estrés por Calor",
+        "action": "Bajar temperatura a 20-26°C. Aumentar circulación de aire. Asegurar riego adecuado. Proporcionar sombra si es necesario."
     },
     "light_burn": {
-        "issue": "Light Burn",
-        "action": "Raise lights 10-15cm higher. Reduce light intensity. Monitor top leaves for recovery. Ensure proper distance maintained."
+        "issue": "Quemadura por Luz",
+        "action": "Subir luces 10-15cm. Reducir intensidad lumínica. Monitorear hojas superiores para recuperación. Mantener distancia apropiada."
     },
     "overwatering": {
-        "issue": "Overwatering",
-        "action": "Allow soil to dry between waterings. Improve drainage. Reduce watering frequency. Check for root rot."
+        "issue": "Exceso de Riego",
+        "action": "Permitir que el sustrato se seque entre riegos. Mejorar drenaje. Reducir frecuencia de riego. Revisar si hay pudrición de raíces."
     },
     "healthy": {
-        "issue": "Healthy Plant",
-        "action": "Continue current care routine. Monitor regularly for any changes. Maintain optimal environmental conditions."
+        "issue": "Planta Saludable",
+        "action": "Continuar con la rutina de cuidado actual. Monitorear regularmente cualquier cambio. Mantener condiciones ambientales óptimas."
     }
 }
 

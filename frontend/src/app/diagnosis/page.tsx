@@ -302,8 +302,8 @@ export default function DiagnosisPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                         <div className="aspect-square relative rounded-lg overflow-hidden bg-gray-100 dark:bg-zinc-900">
                                             <img
-                                                src={result.imageUrl}
-                                                alt="Analyzed plant"
+                                                src={preview || `http://localhost:8081${result.imageUrl}`}
+                                                alt="Planta analizada"
                                                 className="absolute inset-0 w-full h-full object-cover"
                                             />
                                         </div>
