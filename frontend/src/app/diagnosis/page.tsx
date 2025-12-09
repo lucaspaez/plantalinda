@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
 import RoleGuard from '@/components/RoleGuard';
 import api from '@/services/api';
-import { Upload, AlertCircle, CheckCircle, Loader2, ChevronDown, ChevronUp, X, Leaf } from 'lucide-react';
+import { Upload, AlertCircle, CheckCircle, Loader2, ChevronDown, ChevronUp, X, Leaf, AlertTriangle } from 'lucide-react';
 
 interface DiagnosisResult {
     id: number;
@@ -20,8 +20,6 @@ interface ContextData {
     visualSymptoms: string;
     temperature: string;
     humidity: string;
-    ph: string;
-    ec: string;
     userNotes: string;
 }
 
@@ -39,8 +37,6 @@ export default function DiagnosisPage() {
         visualSymptoms: '',
         temperature: '',
         humidity: '',
-        ph: '',
-        ec: '',
         userNotes: ''
     });
 
@@ -71,8 +67,6 @@ export default function DiagnosisPage() {
                 visualSymptoms: context.visualSymptoms || null,
                 temperature: context.temperature ? parseFloat(context.temperature) : null,
                 humidity: context.humidity ? parseFloat(context.humidity) : null,
-                ph: context.ph ? parseFloat(context.ph) : null,
-                ec: context.ec ? parseFloat(context.ec) : null,
                 userNotes: context.userNotes || null
             };
             formData.append('context', JSON.stringify(contextData));
@@ -102,8 +96,6 @@ export default function DiagnosisPage() {
             visualSymptoms: '',
             temperature: '',
             humidity: '',
-            ph: '',
-            ec: '',
             userNotes: ''
         });
     };
@@ -225,28 +217,7 @@ export default function DiagnosisPage() {
                                             />
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">pH</label>
-                                            <input
-                                                type="number"
-                                                step="0.1"
-                                                value={context.ph}
-                                                onChange={(e) => setContext({ ...context, ph: e.target.value })}
-                                                className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-green-500 dark:text-white"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">EC</label>
-                                            <input
-                                                type="number"
-                                                step="0.1"
-                                                value={context.ec}
-                                                onChange={(e) => setContext({ ...context, ec: e.target.value })}
-                                                className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-green-500 dark:text-white"
-                                            />
-                                        </div>
-                                    </div>
+                                    {/* pH and EC removed per requirement */}
                                 </div>
                             )}
                         </div>
@@ -346,9 +317,36 @@ export default function DiagnosisPage() {
                                         </p>
                                     </div>
 
+                                    {/* Interpretation Guide / Disclaimer */}
+                                    <div className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+                                        <div className="flex gap-3">
+                                            <div className="mt-1">
+                                                <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-500" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-1">
+                                                    Cómo interpretar este diagnóstico
+                                                </h4>
+                                                <div className="text-sm text-yellow-700 dark:text-yellow-300/90 space-y-2">
+                                                    <p>
+                                                        Este resultado es generado por una Inteligencia Artificial entrenada con miles de imágenes,
+                                                        pero <strong>no debe tomarse como una verdad absoluta</strong>.
+                                                    </p>
+                                                    <ul className="list-disc pl-4 space-y-1 opacity-90">
+                                                        <li>Úsalo como una <strong>guía de referencia</strong> para mejorar tu cultivo.</li>
+                                                        <li>Ten en cuenta que factores ambientales no visibles en la foto pueden afectar el diagnóstico.</li>
+                                                    </ul>
+                                                    <p className="text-xs pt-2 font-medium opacity-75">
+                                                        * La aplicación descarta cualquier responsabilidad por decisiones tomadas basándose únicamente en este resultado.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <button
                                         onClick={closeResult}
-                                        className="w-full py-3 bg-gray-100 dark:bg-zinc-700 text-gray-900 dark:text-white font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-600 transition-colors"
+                                        className="w-full mt-6 py-3 bg-gray-100 dark:bg-zinc-700 text-gray-900 dark:text-white font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-600 transition-colors"
                                     >
                                         Cerrar y Analizar Otra
                                     </button>

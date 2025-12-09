@@ -1,13 +1,14 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 import io
 import torch
 from transformers import AutoImageProcessor, AutoModelForImageClassification
-from typing import Dict
+from typing import Dict, Optional
 import logging
 import yaml
 import os
+import json
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -64,6 +65,14 @@ ISSUE_ACTIONS = {
     "magnesium_deficiency": {
         "issue": "Deficiencia de Magnesio",
         "action": "Aplicar solución de sales de Epsom (1 cucharadita/galón). Ajustar pH al rango óptimo. Reducir potasio si es excesivo."
+    },
+    "bacterial_infection": {
+        "issue": "Infección Bacteriana",
+        "action": "Aplicar fungicida a base de cobre. Evitar riego foliar. Remover hojas muy afectadas. Aislar planta."
+    },
+    "viral_infection": {
+        "issue": "Infección Viral (Mosaico)",
+        "action": "No tiene cura. Remover y destruir la planta inmediatamente para evitar contagio. Desinfectar herramientas con lavandina/cloro."
     },
     "spider_mites": {
         "issue": "Infestación de Ácaros",
@@ -171,7 +180,7 @@ async def reload_model():
     }
 
 @app.post("/analyze")
-async def analyze_plant(file: UploadFile = File(...)) -> Dict:
+async def analyze_plant(file: UploadFile = File(...), context: str = Form(None)) -> Dict:
     """
     Analyze plant image for diseases, pests, or deficiencies
     
@@ -190,6 +199,15 @@ async def analyze_plant(file: UploadFile = File(...)) -> Dict:
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert("RGB")
         
+        # Parse optional context
+        plant_context = {}
+        if context:
+            try:
+                plant_context = json.loads(context)
+                logger.info(f"Received context: {plant_context}")
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse context JSON")
+
         # Run inference
         if model is not None and processor is not None:
             # Real AI inference
@@ -218,16 +236,56 @@ async def analyze_plant(file: UploadFile = File(...)) -> Dict:
         # Get issue details
         issue_data = ISSUE_ACTIONS.get(issue_key, ISSUE_ACTIONS["healthy"])
         
+        # Validate diagnosis with context (Environmental checks)
+        validation_note = validate_diagnosis_with_context(issue_key, plant_context)
+        final_action = issue_data["action"]
+        if validation_note:
+            final_action = f"{validation_note} {final_action}"
+
         return {
             "predicted_issue": issue_data["issue"],
             "confidence": round(confidence, 3),
-            "corrective_action": issue_data["action"],
+            "corrective_action": final_action,
             "model_used": current_model_name or "fallback"
         }
         
     except Exception as e:
         logger.error(f"Error analyzing image: {e}")
         raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
+
+def validate_diagnosis_with_context(issue_key: str, context: Dict) -> Optional[str]:
+    """
+    Check if the diagnosis makes sense given the environmental context (Temp/Humidity)
+    Returns a note if there's a discrepancy or recommendation.
+    """
+    if not context:
+        return None
+        
+    temp = context.get("temperature")
+    humidity = context.get("humidity")
+    
+    note = None
+    
+    # 1. Heat Stress Check
+    if issue_key == "heat_stress" and temp is not None:
+        if temp < 25:
+            note = "[ALERTA: La temperatura reportada es baja (<25°C) para estrés calórico. Verifique si es quemadura por luz.] "
+        elif temp > 30:
+            note = "[Confirmado: Temperatura alta favorece este diagnóstico.] "
+            
+    # 2. Fungal/Humidity Check (Powdery Mildew, Botrytis/Rot)
+    elif issue_key in ["powdery_mildew", "bud_rot"] and humidity is not None:
+        if humidity < 40:
+             note = "[ALERTA: Humedad baja (<40%) hace menos probable hongos severos. Verifique ventilación.] "
+        elif humidity > 60:
+             note = "[Riesgo Alto: Humedad elevada favorece la propagación de hongos.] "
+             
+    # 3. Spider Mites (Thrive in hot/dry)
+    elif issue_key == "spider_mites":
+        if humidity is not None and humidity > 60:
+            note = "[Nota: Los ácaros prefieren ambientes secos. Humedad actual es alta.] "
+            
+    return note
 
 def map_model_output_to_issue(class_idx: int, id2label: Dict) -> str:
     """
@@ -256,6 +314,14 @@ def map_model_output_to_issue(class_idx: int, id2label: Dict) -> str:
     # Plagas
     elif any(k in label for k in ["mite", "spider", "pest", "insect", "aphid"]):
         return "spider_mites"
+    
+    # Enfermedades Bacterianas
+    elif "bacterial" in label:
+        return "bacterial_infection"
+
+    # Enfermedades Virales
+    elif any(k in label for k in ["virus", "mosaic"]):
+        return "viral_infection"
     
     # Enfermedades fúngicas
     elif any(k in label for k in ["mildew", "powder", "downy"]):

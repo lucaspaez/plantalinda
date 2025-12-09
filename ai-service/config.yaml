@@ -2,7 +2,7 @@
 # Change the model_name to use different pre-trained models from Hugging Face
 
 # Current model: Plant disease detection
-model_name: "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
+model_name: "/app/model"
 
 # Alternative models you can try:
 # model_name: "nateraw/vit-base-beans"  # Bean disease detection
