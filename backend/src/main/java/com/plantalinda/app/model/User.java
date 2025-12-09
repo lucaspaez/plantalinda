@@ -1,5 +1,7 @@
 package com.plantalinda.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "_user") // 'user' is a reserved keyword in PostgreSQL
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User implements UserDetails {
 
     @Id
@@ -31,6 +34,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -39,6 +43,7 @@ public class User implements UserDetails {
     // Multi-tenancy: Relación con la organización
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
+    @JsonIgnoreProperties({ "owner", "hibernateLazyInitializer", "handler" })
     private Organization organization;
 
     // Soft delete fields

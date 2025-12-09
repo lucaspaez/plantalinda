@@ -1,5 +1,6 @@
 package com.plantalinda.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "organization")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Organization {
 
     @Id
@@ -32,6 +34,7 @@ public class Organization {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
+    @JsonIgnoreProperties({ "organization", "password", "authorities", "hibernateLazyInitializer", "handler" })
     private User owner;
 
     @Column(columnDefinition = "TEXT")

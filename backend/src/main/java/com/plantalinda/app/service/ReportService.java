@@ -122,8 +122,8 @@ public class ReportService {
                 "id", batch.getId(),
                 "name", batch.getName(),
                 "strain", batch.getStrain() != null ? batch.getStrain() : "N/A",
-                "status", batch.getStatus(),
-                "plantCount", batch.getPlantCount(),
+                "status", batch.getStatus() != null ? batch.getStatus() : "UNKNOWN",
+                "plantCount", batch.getPlantCount() != null ? batch.getPlantCount() : 0,
                 "harvestYield", batch.getHarvestYield() != null ? batch.getHarvestYield() : 0)).toList());
 
         return convertToJson(data);
